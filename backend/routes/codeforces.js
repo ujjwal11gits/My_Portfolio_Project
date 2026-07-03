@@ -13,42 +13,46 @@ router.get('/stats/:handle', async (req, res) => {
 
   try {
     const [userRes, ratingRes, submissionsRes] = await Promise.all([
-      axios.get(`${CF}/user.info?handles=${handle}`),
-      axios.get(`${CF}/user.rating?handle=${handle}`),
-      axios.get(`${CF}/user.status?handle=${handle}&from=1&count=200`),
+      axios.get(`${CF}/user.info?handles=${handle}`, { timeout: 12000 }),
+      axios.get(`${CF}/user.rating?handle=${handle}`, { timeout: 12000 }),
+      axios.get(`${CF}/user.status?handle=${handle}&from=1&count=500`, { timeout: 15000 }),
     ]);
 
     const user    = userRes.data.result[0];
     const history = ratingRes.data.result;
     const subs    = submissionsRes.data.result;
 
+    // Count unique solved problems
     const solved = new Set();
-    subs.filter(s => s.verdict === 'OK').forEach(s => solved.add(`${s.problem.contestId}-${s.problem.index}`));
+    subs.filter(s => s.verdict === 'OK').forEach(s =>
+      solved.add(`${s.problem.contestId}-${s.problem.index}`)
+    );
 
-    const ratingHistory = history.slice(-20).map(h => ({
+    const ratingHistory = history.map(h => ({
       rating:      h.newRating,
       contestName: h.contestName,
-      date:        h.ratingUpdateTimeSeconds * 1000,
+      date:        new Date(h.ratingUpdateTimeSeconds * 1000).toISOString(),
       rank:        h.rank,
     }));
 
     const data = {
-      handle:      user.handle,
-      rating:      user.rating      || 0,
-      maxRating:   user.maxRating   || 0,
-      rank:        user.rank        || 'unrated',
-      maxRank:     user.maxRank     || 'unrated',
-      contribution: user.contribution,
+      handle:         user.handle,
+      rating:         user.rating      || 0,
+      maxRating:      user.maxRating   || 0,
+      rank:           user.rank        || 'unrated',
+      maxRank:        user.maxRank     || 'unrated',
+      contribution:   user.contribution,
       problemsSolved: solved.size,
       contestsCount:  history.length,
       ratingHistory,
-      avatar:      user.avatar,
-      country:     user.country,
+      avatar:         user.avatar,
+      country:        user.country,
     };
 
     cache.set(cacheKey, data);
-    res.json({ success: true, data });
+    res.json({ success: true, data, cached: false });
   } catch (err) {
+    console.error('[Codeforces] fetch error:', err.message);
     res.status(500).json({ success: false, message: err.message });
   }
 });

@@ -242,6 +242,36 @@
   gap: 4px;
 }
 
+/* ── Last synced timestamp ── */
+.last-synced-text {
+  font-size: 0.78rem;
+  color: #64748b;
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ── Skeleton states ── */
+.skeleton-bar {
+  height: 20px;
+  border-radius: 8px;
+  background: linear-gradient(90deg, #1e1e3f 25%, #2a2a5a 50%, #1e1e3f 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.6s infinite;
+  margin: 1.5rem 0;
+}
+.skeleton-repo {
+  height: 160px;
+  background: linear-gradient(90deg, #1e1e3f 25%, #2a2a5a 50%, #1e1e3f 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.6s infinite;
+}
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+
 @media (max-width: 900px) {
   .repos-grid {
     grid-template-columns: 1fr;

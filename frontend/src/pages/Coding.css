@@ -397,6 +397,62 @@
   color: var(--text-muted);
 }
 
+/* ── Last synced timestamp ── */
+.last-synced-text {
+  font-size: 0.78rem;
+  color: #64748b;
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ── Platform error icon ── */
+.platform-err-icon {
+  color: #f87171;
+  font-size: 0.9rem;
+  margin-left: 4px;
+  vertical-align: middle;
+}
+
+/* ── Platform inline stats ── */
+.platform-stat {
+  color: #94a3b8;
+  font-size: 0.78rem;
+  margin-left: 4px;
+}
+.platform-stat-warn {
+  color: #f59e0b !important;
+}
+
+/* ── Skeleton loaders ── */
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+.skeleton-donut,
+.skeleton-val,
+.skeleton-bar,
+.skeleton-repo {
+  background: linear-gradient(90deg, #1e1e3f 25%, #2a2a5a 50%, #1e1e3f 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.6s infinite;
+  border-radius: 12px;
+}
+.skeleton-donut { height: 200px; width: 200px; border-radius: 50%; margin: 1rem auto; }
+.skeleton-val   { height: 36px; width: 80px; border-radius: 8px; margin: 0.5rem 0; }
+
+/* ── Chart error state ── */
+.chart-error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #f87171;
+  padding: 2rem;
+  font-size: 0.9rem;
+}
+
 /* Responsive */
 @media (max-width: 1024px) {
   .coding-dashboard-grid {
