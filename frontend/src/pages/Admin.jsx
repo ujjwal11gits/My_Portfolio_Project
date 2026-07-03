@@ -13,6 +13,7 @@ import {
   FiUser, FiFolder, FiBook, FiAward, FiBarChart2, FiExternalLink, FiLogOut
 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
+import { formatResumeUrl } from '../utils/resumeHelper';
 import './Admin.css';
 
 export default function Admin() {
@@ -101,9 +102,13 @@ export default function Admin() {
   // Save Profile
   const handleSaveProfile = async (e) => {
     e.preventDefault();
+    const formattedProfile = {
+      ...profileForm,
+      resumeUrl: formatResumeUrl(profileForm.resumeUrl),
+    };
     toast.loading('Saving profile data...', { id: 'save-profile' });
     try {
-      const res = await updateProfile(profileForm);
+      const res = await updateProfile(formattedProfile);
       if (res.data?.success) {
         toast.success('Profile updated successfully!', { id: 'save-profile' });
         await refreshGlobalData();

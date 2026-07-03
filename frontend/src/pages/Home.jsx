@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FiGithub, FiLinkedin, FiDownload, FiArrowRight, FiCode, FiAward, FiFileText, FiTrendingUp, FiLayers } from 'react-icons/fi';
 import { usePortfolio } from '../context/PortfolioContext';
+import { handleOpenResume } from '../utils/resumeHelper';
 import './Home.css';
 
 /* ── Typewriter Hook (Glitch-Free State Machine) ────────────── */
@@ -204,13 +205,12 @@ export default function Home() {
             <Link to="/projects" className="btn btn-primary">
               View My Work <FiArrowRight />
             </Link>
-            <a
-              href={profile?.resumeUrl || '#'}
-              target="_blank" rel="noreferrer"
+            <button
+              onClick={e => handleOpenResume(e, profile?.resumeUrl)}
               className="btn btn-outline"
             >
               <FiDownload /> Download Resume
-            </a>
+            </button>
           </motion.div>
         </div>
 

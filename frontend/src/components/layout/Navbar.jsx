@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { usePortfolio } from '../../context/PortfolioContext';
+import { handleOpenResume } from '../../utils/resumeHelper';
 import './Navbar.css';
 
 const NAV_LINKS = [
@@ -14,11 +15,12 @@ const NAV_LINKS = [
 ];
 
 export default function Navbar() {
-  const [scrolled,    setScrolled]    = useState(false);
-  const [menuOpen,    setMenuOpen]    = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const { data } = usePortfolio();
   const location = useLocation();
   const name = data?.profile?.name || 'Ujjwal Choubey';
+  const resumeUrl = data?.profile?.resumeUrl;
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -58,13 +60,12 @@ export default function Navbar() {
 
         {/* CTA + Hamburger */}
         <div className="navbar-actions">
-          <a
-            href={data?.profile?.resumeUrl || '#'}
-            target="_blank" rel="noreferrer"
+          <button
+            onClick={e => handleOpenResume(e, resumeUrl)}
             className="btn btn-primary btn-sm"
           >
             Resume
-          </a>
+          </button>
           <button
             className={`hamburger ${menuOpen ? 'open' : ''}`}
             onClick={() => setMenuOpen(p => !p)}
@@ -87,13 +88,13 @@ export default function Navbar() {
             {link.label}
           </NavLink>
         ))}
-        <a
-          href={data?.profile?.resumeUrl || '#'}
+        <button
+          onClick={e => handleOpenResume(e, resumeUrl)}
           className="btn btn-primary"
           style={{ marginTop: 8, width: '100%', justifyContent: 'center' }}
         >
           Download Resume
-        </a>
+        </button>
       </div>
     </header>
   );

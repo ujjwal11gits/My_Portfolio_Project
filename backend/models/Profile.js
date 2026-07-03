@@ -10,7 +10,7 @@ const ProfileSchema = new mongoose.Schema({
   degree:      { type: String, default: 'B.Tech in Computer Science' },
   year:        { type: String, default: '2023 – 2027' },
   email:       { type: String, default: 'ujjwal@example.com' },
-  resumeUrl:   { type: String, default: '' },
+  resumeUrl:   { type: String, default: 'https://drive.google.com/file/d/1BnZfqZSGfknYCVApsknJo9PyQZjvBYXV/view' },
   photoUrl:    { type: String, default: '/assets/images/profile.png' },
   social: {
     github:    { type: String, default: 'https://github.com/bytewiz_ujjwal' },
