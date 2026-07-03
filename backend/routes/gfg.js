@@ -5,8 +5,41 @@ import NodeCache from 'node-cache';
 const router = express.Router();
 const cache = new NodeCache({ stdTTL: 3600 });
 
-// Primary GFG stats API
-const GFG_API = 'https://geeks-for-geeks-stats-api.vercel.app';
+// Scrape GFG profile page directly — highly reliable
+const scrapeGFG = async (username) => {
+  const response = await axios.get(`https://www.geeksforgeeks.org/user/${username}/`, {
+    headers: {
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+      'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+    },
+    timeout: 20000,
+  });
+
+  const html = response.data;
+
+  const extractNum = (key) => {
+    const re = new RegExp(`\\\\?"${key}\\\\?"\\s*:\\s*(\\d+)`);
+    const m = html.match(re);
+    return m ? parseInt(m[1]) : 0;
+  };
+
+  const totalSolved  = extractNum('total_problems_solved');
+  const codingScore  = extractNum('score');
+  const streak       = extractNum('pod_solved_longest_streak');
+
+  return {
+    username,
+    totalSolved: totalSolved,
+    codingScore: codingScore,
+    streak: streak,
+    school: 0,
+    basic: 0,
+    easy: 0,
+    medium: 0,
+    hard: 0,
+    apiDown: false,
+  };
+};
 
 router.get('/stats/:username', async (req, res) => {
   const { username } = req.params;
@@ -14,46 +47,20 @@ router.get('/stats/:username', async (req, res) => {
   if (cache.has(cacheKey)) return res.json({ success: true, data: cache.get(cacheKey), cached: true });
 
   try {
-    const response = await axios.get(`${GFG_API}/?raw=y&userName=${username}`, { timeout: 15000 });
-    const d = response.data;
-
-    if (d.error) {
-      return res.status(404).json({ success: false, message: d.error });
-    }
-
-    // The API returns two formats — handle both
-    const info         = d.info         || d;
-    const solvedStats  = d.solvedStats  || {};
-
-    const data = {
-      username,
-      totalSolved:  info.totalProblemsSolved || d.totalProblemsSolved || 0,
-      school:       solvedStats.school?.count   || d.School  || 0,
-      basic:        solvedStats.basic?.count    || d.Basic   || 0,
-      easy:         solvedStats.easy?.count     || d.Easy    || 0,
-      medium:       solvedStats.medium?.count   || d.Medium  || 0,
-      hard:         solvedStats.hard?.count     || d.Hard    || 0,
-      institute:    info.institute    || '',
-      instituteRank:info.instituteRank || 0,
-      codingScore:  info.codingScore  || 0,
-      globalRank:   info.globalRank   || 0,
-      streak:       info.currentStreak || '0',
-    };
-
+    const data = await scrapeGFG(username);
     cache.set(cacheKey, data);
     return res.json({ success: true, data, cached: false });
   } catch (err) {
     console.error('[GFG] fetch error:', err.message);
-    // Graceful fallback — no fake data
     return res.json({
       success: true,
       data: {
         username,
-        totalSolved: 0, school: 0, basic: 0, easy: 0, medium: 0, hard: 0,
-        institute: '', instituteRank: 0, codingScore: 0, globalRank: 0, streak: '0',
+        totalSolved: 0, codingScore: 0, streak: 0,
+        school: 0, basic: 0, easy: 0, medium: 0, hard: 0,
         apiDown: true,
       },
-      note: 'GFG stats API temporarily unavailable.',
+      note: 'GFG stats temporarily unavailable.',
     });
   }
 });

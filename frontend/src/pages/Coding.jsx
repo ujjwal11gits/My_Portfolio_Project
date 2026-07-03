@@ -97,17 +97,28 @@ export default function Coding() {
     }
   };
 
-  // ── Aggregates (real data only, no fake floors) ──
+  // ── Aggregates (Real Data Only) ──
   const lcSolved    = lcData?.totalSolved    || 0;
   const cfSolved    = cfData?.problemsSolved || 0;
   const ccSolved    = ccData?.problemsSolved || 0;
-  const gfgSolved   = gfgData?.totalSolved  || 0;
+  const gfgSolved   = gfgData?.totalSolved   || 0;
+
+  // Total questions across ALL 4 platforms
   const totalSolved = lcSolved + cfSolved + ccSolved + gfgSolved;
 
+  // Total contests across LC, CF, CC
   const lcContests    = lcData?.contestsAttended || 0;
   const cfContests    = cfData?.contestsCount    || 0;
   const ccContests    = ccData?.contestsCount    || 0;
   const totalContests = lcContests + cfContests + ccContests;
+
+  // All-time max rating across platforms
+  const lcMaxRating = lcData?.ratingHistory?.length
+    ? Math.max(...lcData.ratingHistory.map(h => h.rating))
+    : Math.round(lcData?.contestRating || 0);
+  const cfMaxRating = cfData?.maxRating || 0;
+  const ccMaxRating = ccData?.maxRating || 0;
+  const allTimeMaxRating = Math.max(lcMaxRating, cfMaxRating, ccMaxRating);
 
   const ratingHistory =
     ratingPlatform === 'leetcode'   ? (lcData?.ratingHistory  || []) :
@@ -116,13 +127,19 @@ export default function Coding() {
 
   const dsaTopics = profile.dsaTopics || [];
 
-  // DSA Breakdown donut — show all platforms combined by solved count
-  const platformItems = [
-    { label: 'LeetCode',   value: lcSolved,  color: '#f59e0b' },
-    { label: 'GFG',        value: gfgSolved, color: '#22c55e' },
-    { label: 'Codeforces', value: cfSolved,  color: '#06b6d4' },
-    { label: 'CodeChef',   value: ccSolved,  color: '#a855f7' },
-  ].filter(p => p.value > 0);
+  // 1. DSA Breakdown Items (LeetCode + GFG)
+  const dsaTotal = lcSolved + gfgSolved;
+  const dsaItems = [
+    { label: 'LeetCode', value: lcSolved, color: '#f59e0b' },
+    { label: 'GFG',      value: gfgSolved, color: '#22c55e' },
+  ].filter(i => i.value > 0);
+
+  // 2. Competitive Programming Breakdown Items (Codeforces + CodeChef)
+  const cpTotal = cfSolved + ccSolved;
+  const cpItems = [
+    { label: 'Codeforces', value: cfSolved, color: '#06b6d4' },
+    { label: 'CodeChef',   value: ccSolved, color: '#a855f7' },
+  ].filter(i => i.value > 0);
 
   return (
     <div className="coding-page page">
@@ -179,7 +196,7 @@ export default function Coding() {
             <div>
               <span className="summary-label">Total Solved</span>
               <h3 className="summary-val mono">{loading ? '—' : totalSolved || '—'}</h3>
-              <span className="summary-sub">LC + CF + CC + GFG</span>
+              <span className="summary-sub">LC + GFG + CF + CC</span>
             </div>
           </div>
 
@@ -195,12 +212,12 @@ export default function Coding() {
           <div className="summary-card glass-card">
             <div className="card-icon-tag gold"><FiTrendingUp /></div>
             <div>
-              <span className="summary-label">LeetCode Rating</span>
+              <span className="summary-label">All-Time Max Rating</span>
               <h3 className="summary-val mono">
-                {loading ? '—' : lcData?.contestRating ? Math.round(lcData.contestRating) : '—'}
+                {loading ? '—' : allTimeMaxRating || '—'}
               </h3>
               <span className="summary-sub">
-                {lcData?.topPercentage ? `Top ${lcData.topPercentage.toFixed(1)}%` : 'Rated'}
+                {lcMaxRating === allTimeMaxRating ? 'Peak Rating (LeetCode)' : ccMaxRating === allTimeMaxRating ? 'Peak Rating (CodeChef)' : 'Peak Rating'}
               </span>
             </div>
           </div>
@@ -208,7 +225,7 @@ export default function Coding() {
           <div className="summary-card glass-card">
             <div className="card-icon-tag green"><FiZap /></div>
             <div>
-              <span className="summary-label">Codeforces</span>
+              <span className="summary-label">Codeforces Rank</span>
               <h3 className="summary-val mono">
                 {loading ? '—' : cfData?.rank ? cfData.rank.charAt(0).toUpperCase() + cfData.rank.slice(1) : '—'}
               </h3>
@@ -224,7 +241,7 @@ export default function Coding() {
           {/* LEFT COLUMN */}
           <div className="dashboard-col-left">
 
-            {/* Platform Profiles — clean: just name + @handle + link */}
+            {/* Platform Profiles — Clean & Elegant */}
             <div className="platform-list-card glass-card">
               <h3 className="card-title"><FiCheckCircle /> Platform Profiles</h3>
               <div className="platform-items">
@@ -264,37 +281,52 @@ export default function Coding() {
               </div>
             </div>
 
-            {/* DSA Breakdown — all platforms combined */}
+            {/* 1. DSA BREAKDOWN SECTION (LeetCode + GFG) */}
             <div className="donut-card glass-card">
               <h3 className="card-title"><FiActivity /> DSA Breakdown</h3>
-              <p className="card-desc">Problems solved across all platforms</p>
+              <p className="card-desc">LeetCode & GeeksForGeeks Questions</p>
               {loading ? (
                 <div className="skeleton-donut" />
-              ) : platformItems.length > 0 ? (
-                <DonutChart
-                  total={totalSolved}
-                  items={platformItems}
-                />
+              ) : dsaItems.length > 0 ? (
+                <>
+                  <DonutChart
+                    total={dsaTotal}
+                    items={dsaItems}
+                  />
+
+                  {/* Difficulty Breakdown (Easy / Medium / Hard) */}
+                  {lcData && (
+                    <div className="difficulty-pills">
+                      <div className="diff-pill easy">
+                        <span className="diff-dot" /> Easy: <strong>{lcData.easySolved || 0}</strong>
+                      </div>
+                      <div className="diff-pill medium">
+                        <span className="diff-dot" /> Med: <strong>{lcData.mediumSolved || 0}</strong>
+                      </div>
+                      <div className="diff-pill hard">
+                        <span className="diff-dot" /> Hard: <strong>{lcData.hardSolved || 0}</strong>
+                      </div>
+                    </div>
+                  )}
+                </>
               ) : (
                 <div className="chart-error">No data available</div>
               )}
             </div>
 
-            {/* LeetCode Difficulty Breakdown */}
+            {/* 2. COMPETITIVE PROGRAMMING BREAKDOWN SECTION (Codeforces + CodeChef) */}
             <div className="donut-card glass-card">
-              <h3 className="card-title"><FiCode /> LeetCode Difficulty</h3>
-              <p className="card-desc">Easy / Medium / Hard breakdown</p>
+              <h3 className="card-title"><FiCode /> Competitive Programming</h3>
+              <p className="card-desc">Codeforces & CodeChef Questions</p>
               {loading ? (
                 <div className="skeleton-donut" />
-              ) : lcData ? (
+              ) : cpItems.length > 0 ? (
                 <DonutChart
-                  easy={lcData.easySolved}
-                  medium={lcData.mediumSolved}
-                  hard={lcData.hardSolved}
-                  total={lcData.totalSolved}
+                  total={cpTotal}
+                  items={cpItems}
                 />
               ) : (
-                <div className="chart-error">LeetCode data unavailable</div>
+                <div className="chart-error">No data available</div>
               )}
             </div>
 
@@ -330,31 +362,6 @@ export default function Coding() {
               />
             </div>
 
-            {/* DSA Topic Analysis (from DB) */}
-            {dsaTopics.length > 0 && (
-              <div className="topic-card glass-card">
-                <h3 className="card-title"><FiCode /> DSA Topic Analysis</h3>
-                <p className="card-desc">Questions solved by algorithm & data structure category</p>
-                <div className="topic-bars">
-                  {dsaTopics.map((topic, idx) => {
-                    const maxCount = Math.max(...dsaTopics.map(t => t.count), 1);
-                    const pct = Math.round((topic.count / maxCount) * 100);
-                    return (
-                      <div key={idx} className="topic-bar-row">
-                        <div className="topic-info">
-                          <span className="topic-name">{topic.topic}</span>
-                          <span className="topic-count mono">{topic.count}</span>
-                        </div>
-                        <div className="topic-track">
-                          <div className="topic-fill" style={{ width: `${pct}%` }} />
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-
             {/* Contest Ratings Summary Grid */}
             <div className="contest-ratings-grid grid-3">
 
@@ -363,8 +370,8 @@ export default function Coding() {
                 {loading ? <div className="skeleton-val" /> : lcData ? (
                   <>
                     <div className="rating-val mono">{Math.round(lcData.contestRating) || '—'}</div>
-                    <div className="max-val">Contests: {lcData.contestsAttended}</div>
-                    <div className="contest-count">Solved: {lcData.totalSolved}</div>
+                    <div className="max-val">Max: {lcMaxRating}</div>
+                    <div className="contest-count">Contests: {lcData.contestsAttended}</div>
                   </>
                 ) : (
                   <div className="contest-count" style={{ color: '#f87171', fontSize: '0.78rem' }}>Unavailable</div>
@@ -401,11 +408,11 @@ export default function Coding() {
 
             </div>
 
-            {/* GFG Stats Card */}
+            {/* GFG & Practice Summary Card */}
             {(gfgData && !gfgData.apiDown) && (
               <div className="gfg-stats-card glass-card">
                 <h3 className="card-title" style={{ color: '#22c55e' }}>
-                  <span style={{ marginRight: 8 }}>🟢</span> GeeksForGeeks Stats
+                  <span style={{ marginRight: 8 }}>🟢</span> GeeksForGeeks Activity
                 </h3>
                 <div className="gfg-stats-row">
                   <div className="gfg-stat">
@@ -413,23 +420,38 @@ export default function Coding() {
                     <span className="gfg-stat-label">Total Solved</span>
                   </div>
                   <div className="gfg-stat">
-                    <span className="gfg-stat-val mono">{gfgData.easy}</span>
-                    <span className="gfg-stat-label">Easy</span>
+                    <span className="gfg-stat-val mono">{gfgData.codingScore}</span>
+                    <span className="gfg-stat-label">Coding Score</span>
                   </div>
                   <div className="gfg-stat">
-                    <span className="gfg-stat-val mono">{gfgData.medium}</span>
-                    <span className="gfg-stat-label">Medium</span>
+                    <span className="gfg-stat-val mono">{gfgData.streak}d</span>
+                    <span className="gfg-stat-label">Longest Streak</span>
                   </div>
-                  <div className="gfg-stat">
-                    <span className="gfg-stat-val mono">{gfgData.hard}</span>
-                    <span className="gfg-stat-label">Hard</span>
-                  </div>
-                  {gfgData.codingScore > 0 && (
-                    <div className="gfg-stat">
-                      <span className="gfg-stat-val mono">{gfgData.codingScore}</span>
-                      <span className="gfg-stat-label">Score</span>
-                    </div>
-                  )}
+                </div>
+              </div>
+            )}
+
+            {/* DSA Topic Analysis (from DB) */}
+            {dsaTopics.length > 0 && (
+              <div className="topic-card glass-card">
+                <h3 className="card-title"><FiCode /> DSA Topic Breakdown</h3>
+                <p className="card-desc">Questions solved by algorithm & data structure category</p>
+                <div className="topic-bars">
+                  {dsaTopics.map((topic, idx) => {
+                    const maxCount = Math.max(...dsaTopics.map(t => t.count), 1);
+                    const pct = Math.round((topic.count / maxCount) * 100);
+                    return (
+                      <div key={idx} className="topic-bar-row">
+                        <div className="topic-info">
+                          <span className="topic-name">{topic.topic}</span>
+                          <span className="topic-count mono">{topic.count}</span>
+                        </div>
+                        <div className="topic-track">
+                          <div className="topic-fill" style={{ width: `${pct}%` }} />
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             )}
