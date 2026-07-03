@@ -4,20 +4,21 @@ import { FiGithub, FiLinkedin, FiInstagram, FiMail, FiArrowUp, FiCode } from 're
 import './Footer.css';
 
 const NAV_LINKS = [
-  { to: '/',             label: 'Home' },
-  { to: '/about',        label: 'About' },
-  { to: '/projects',     label: 'Projects' },
-  { to: '/coding',       label: 'Coding' },
-  { to: '/achievements', label: 'Achievements' },
-  { to: '/contact',      label: 'Contact' },
+  { to: '/',         label: 'Home' },
+  { to: '/about',    label: 'About' },
+  { to: '/projects', label: 'Projects' },
+  { to: '/coding',   label: 'Coding' },
 ];
 
 export default function Footer() {
   const { data } = usePortfolio();
   const profile = data?.profile;
   const name    = profile?.name || 'Ujjwal Choubey';
-  const social  = profile?.socialLinks || profile?.social || {};
-  const email   = profile?.email || 'ujjwal11.work@gmail.com';
+
+  const githubUrl   = 'https://github.com/ujjwal11gits';
+  const linkedinUrl = 'https://www.linkedin.com/in/ujjwalkumarchoubey';
+  const instagramUrl = 'https://share.google/GvBZ2d92ULBZTtf4l';
+  const emailUrl    = 'mailto:ujjwal11.work@gmail.com';
 
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
@@ -37,8 +38,7 @@ export default function Footer() {
           </NavLink>
 
           <p className="footer-tagline">
-            Building high-performance applications &amp; solving complex problems.
-            One commit at a time. ⚡
+            Building things that matter. One commit at a time. ⚡
           </p>
 
           <div className="availability-badge">
@@ -67,30 +67,34 @@ export default function Footer() {
           <p className="connect-desc">
             Feel free to reach out for collaborations, projects, or just a chat!
           </p>
-          <div className="footer-socials">
+          <div className="footer-social-icons-only">
             <a
-              href={social.github || 'https://github.com/ujjwal11gits'}
+              href={githubUrl}
               target="_blank" rel="noreferrer" title="GitHub"
+              className="social-icon-btn"
             >
               <FiGithub />
-              <span>GitHub</span>
             </a>
             <a
-              href={social.linkedin || 'https://www.linkedin.com/in/ujjwalkumarchoubey'}
+              href={linkedinUrl}
               target="_blank" rel="noreferrer" title="LinkedIn"
+              className="social-icon-btn"
             >
               <FiLinkedin />
-              <span>LinkedIn</span>
             </a>
-            {(social.instagram) && (
-              <a href={social.instagram} target="_blank" rel="noreferrer" title="Instagram">
-                <FiInstagram />
-                <span>Instagram</span>
-              </a>
-            )}
-            <a href={`mailto:${email}`} title="Email">
+            <a 
+              href={instagramUrl} 
+              target="_blank" rel="noreferrer" title="Instagram"
+              className="social-icon-btn"
+            >
+              <FiInstagram />
+            </a>
+            <a 
+              href={emailUrl} 
+              title="Email"
+              className="social-icon-btn"
+            >
               <FiMail />
-              <span>Email</span>
             </a>
           </div>
         </div>

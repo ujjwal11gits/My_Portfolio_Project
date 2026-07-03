@@ -210,27 +210,28 @@ export default function About() {
                 <div className="about-photo-glow" />
               </div>
 
-              {/* Social links under photo — always visible with fallbacks */}
+              {/* Social links under photo — always visible with verified URLs */}
               <div className="about-socials">
                 <a
-                  href={social.github || 'https://github.com/ujjwal11gits'}
+                  href="https://github.com/ujjwal11gits"
                   target="_blank" rel="noreferrer" className="about-social-link" title="GitHub"
                 >
                   <FiGithub />
                 </a>
                 <a
-                  href={social.linkedin || 'https://www.linkedin.com/in/ujjwalkumarchoubey'}
+                  href="https://www.linkedin.com/in/ujjwalkumarchoubey"
                   target="_blank" rel="noreferrer" className="about-social-link" title="LinkedIn"
                 >
                   <FiLinkedin />
                 </a>
-                {social.instagram && (
-                  <a href={social.instagram} target="_blank" rel="noreferrer" className="about-social-link" title="Instagram">
-                    <FiInstagram />
-                  </a>
-                )}
+                <a 
+                  href="https://share.google/GvBZ2d92ULBZTtf4l" 
+                  target="_blank" rel="noreferrer" className="about-social-link" title="Instagram"
+                >
+                  <FiInstagram />
+                </a>
                 <a
-                  href={`mailto:${profile.email || 'ujjwal11.work@gmail.com'}`}
+                  href="mailto:ujjwal11.work@gmail.com"
                   className="about-social-link" title="Email"
                 >
                   <FiMail />
