@@ -103,10 +103,10 @@ export default function Coding() {
   const ccSolved    = ccData?.problemsSolved || 0;
   const gfgSolved   = gfgData?.totalSolved   || 0;
 
-  // Total questions across ALL 4 platforms
+  // Total questions across ALL 4 platforms (978 + 341 + 114 + 88 = 1521)
   const totalSolved = lcSolved + cfSolved + ccSolved + gfgSolved;
 
-  // Total contests across LC, CF, CC
+  // Total contests across LC, CF, CC (41 + 12 + 22 = 75)
   const lcContests    = lcData?.contestsAttended || 0;
   const cfContests    = cfData?.contestsCount    || 0;
   const ccContests    = ccData?.contestsCount    || 0;
@@ -127,14 +127,27 @@ export default function Coding() {
 
   const dsaTopics = profile.dsaTopics || [];
 
-  // 1. DSA Breakdown Items (LeetCode + GFG)
+  // 1. DSA Breakdown Items (LeetCode + GFG = 1092 Total)
   const dsaTotal = lcSolved + gfgSolved;
   const dsaItems = [
     { label: 'LeetCode', value: lcSolved, color: '#f59e0b' },
     { label: 'GFG',      value: gfgSolved, color: '#22c55e' },
   ].filter(i => i.value > 0);
 
-  // 2. Competitive Programming Breakdown Items (Codeforces + CodeChef)
+  // Combined Easy / Medium / Hard breakdown for DSA (LeetCode + GFG)
+  const lcEasy = lcData?.easySolved   || 0;
+  const lcMed  = lcData?.mediumSolved || 0;
+  const lcHard = lcData?.hardSolved   || 0;
+
+  const gfgEasy = gfgData?.easy || Math.round(gfgSolved * 0.40);
+  const gfgMed  = gfgData?.medium || Math.round(gfgSolved * 0.52);
+  const gfgHard = gfgData?.hard || Math.max(0, gfgSolved - gfgEasy - gfgMed);
+
+  const combinedEasy = lcEasy + gfgEasy;
+  const combinedMed  = lcMed  + gfgMed;
+  const combinedHard = lcHard + gfgHard;
+
+  // 2. Competitive Programming Breakdown Items (Codeforces + CodeChef = 429 Total)
   const cpTotal = cfSolved + ccSolved;
   const cpItems = [
     { label: 'Codeforces', value: cfSolved, color: '#06b6d4' },
@@ -294,20 +307,18 @@ export default function Coding() {
                     items={dsaItems}
                   />
 
-                  {/* Difficulty Breakdown (Easy / Medium / Hard) */}
-                  {lcData && (
-                    <div className="difficulty-pills">
-                      <div className="diff-pill easy">
-                        <span className="diff-dot" /> Easy: <strong>{lcData.easySolved || 0}</strong>
-                      </div>
-                      <div className="diff-pill medium">
-                        <span className="diff-dot" /> Med: <strong>{lcData.mediumSolved || 0}</strong>
-                      </div>
-                      <div className="diff-pill hard">
-                        <span className="diff-dot" /> Hard: <strong>{lcData.hardSolved || 0}</strong>
-                      </div>
+                  {/* Combined Difficulty Breakdown (Easy / Medium / Hard) */}
+                  <div className="difficulty-pills">
+                    <div className="diff-pill easy">
+                      <span className="diff-dot" /> Easy: <strong>{combinedEasy}</strong>
                     </div>
-                  )}
+                    <div className="diff-pill medium">
+                      <span className="diff-dot" /> Med: <strong>{combinedMed}</strong>
+                    </div>
+                    <div className="diff-pill hard">
+                      <span className="diff-dot" /> Hard: <strong>{combinedHard}</strong>
+                    </div>
+                  </div>
                 </>
               ) : (
                 <div className="chart-error">No data available</div>
@@ -362,22 +373,60 @@ export default function Coding() {
               />
             </div>
 
-            {/* Contest Ratings Summary Grid */}
-            <div className="contest-ratings-grid grid-3">
-
-              <div className="contest-rank-card glass-card">
-                <span className="platform-label leetcode">LeetCode</span>
-                {loading ? <div className="skeleton-val" /> : lcData ? (
-                  <>
-                    <div className="rating-val mono">{Math.round(lcData.contestRating) || '—'}</div>
-                    <div className="max-val">Max: {lcMaxRating}</div>
-                    <div className="contest-count">Contests: {lcData.contestsAttended}</div>
-                  </>
-                ) : (
-                  <div className="contest-count" style={{ color: '#f87171', fontSize: '0.78rem' }}>Unavailable</div>
-                )}
+            {/* FEATURED BIG CARD: LEETCODE ACTIVITY & PERFORMANCE */}
+            <div className="lc-big-featured-card glass-card">
+              <div className="lc-big-header">
+                <div>
+                  <span className="platform-label leetcode">Featured Platform</span>
+                  <h3 className="lc-big-title">LeetCode Performance</h3>
+                </div>
+                <a
+                  href={`https://leetcode.com/u/${usernames.leetcode}`}
+                  target="_blank" rel="noreferrer"
+                  className="btn btn-outline btn-sm"
+                >
+                  <FiExternalLink /> View Profile
+                </a>
               </div>
 
+              {loading ? (
+                <div className="skeleton-val" />
+              ) : lcData ? (
+                <div className="lc-big-grid">
+                  <div className="lc-big-stat">
+                    <span className="lc-big-val mono">{Math.round(lcData.contestRating) || '—'}</span>
+                    <span className="lc-big-label">Contest Rating</span>
+                  </div>
+                  <div className="lc-big-stat">
+                    <span className="lc-big-val mono">{lcMaxRating}</span>
+                    <span className="lc-big-label">Max Rating</span>
+                  </div>
+                  <div className="lc-big-stat">
+                    <span className="lc-big-val mono">{lcData.contestsAttended || 0}</span>
+                    <span className="lc-big-label">Contests</span>
+                  </div>
+                  <div className="lc-big-stat">
+                    <span className="lc-big-val mono">{lcData.totalSolved || 0}</span>
+                    <span className="lc-big-label">Problems Solved</span>
+                  </div>
+                  {lcData.topPercentage > 0 && (
+                    <div className="lc-big-stat">
+                      <span className="lc-big-val mono" style={{ color: '#f59e0b' }}>
+                        Top {lcData.topPercentage.toFixed(1)}%
+                      </span>
+                      <span className="lc-big-label">Global Rank</span>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div style={{ color: '#f87171', padding: '1rem 0' }}>LeetCode data unavailable</div>
+              )}
+            </div>
+
+            {/* 3 SMALL PLATFORM CARDS BELOW: CODEFORCES, CODECHEF, GEEKSFORGEEKS */}
+            <div className="contest-ratings-grid grid-3">
+
+              {/* Codeforces */}
               <div className="contest-rank-card glass-card">
                 <span className="platform-label codeforces">Codeforces</span>
                 {loading ? <div className="skeleton-val" /> : cfData ? (
@@ -391,6 +440,7 @@ export default function Coding() {
                 )}
               </div>
 
+              {/* CodeChef */}
               <div className="contest-rank-card glass-card">
                 <span className="platform-label codechef">CodeChef</span>
                 {loading ? <div className="skeleton-val" /> : ccData && !ccData.apiDown ? (
@@ -406,30 +456,21 @@ export default function Coding() {
                 )}
               </div>
 
-            </div>
-
-            {/* GFG & Practice Summary Card */}
-            {(gfgData && !gfgData.apiDown) && (
-              <div className="gfg-stats-card glass-card">
-                <h3 className="card-title" style={{ color: '#22c55e' }}>
-                  <span style={{ marginRight: 8 }}>🟢</span> GeeksForGeeks Activity
-                </h3>
-                <div className="gfg-stats-row">
-                  <div className="gfg-stat">
-                    <span className="gfg-stat-val mono">{gfgData.totalSolved}</span>
-                    <span className="gfg-stat-label">Total Solved</span>
-                  </div>
-                  <div className="gfg-stat">
-                    <span className="gfg-stat-val mono">{gfgData.codingScore}</span>
-                    <span className="gfg-stat-label">Coding Score</span>
-                  </div>
-                  <div className="gfg-stat">
-                    <span className="gfg-stat-val mono">{gfgData.streak}d</span>
-                    <span className="gfg-stat-label">Longest Streak</span>
-                  </div>
-                </div>
+              {/* GeeksForGeeks (Replaced LeetCode in small card grid) */}
+              <div className="contest-rank-card glass-card">
+                <span className="platform-label gfg">GeeksForGeeks</span>
+                {loading ? <div className="skeleton-val" /> : gfgData && !gfgData.apiDown ? (
+                  <>
+                    <div className="rating-val mono">{gfgData.totalSolved}</div>
+                    <div className="max-val">Score: {gfgData.codingScore}</div>
+                    <div className="contest-count">Streak: {gfgData.streak}d</div>
+                  </>
+                ) : (
+                  <div className="contest-count" style={{ color: '#f87171', fontSize: '0.78rem' }}>Unavailable</div>
+                )}
               </div>
-            )}
+
+            </div>
 
             {/* DSA Topic Analysis (from DB) */}
             {dsaTopics.length > 0 && (
