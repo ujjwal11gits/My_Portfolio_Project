@@ -103,6 +103,7 @@
 .hero-right {
   position: relative;
   flex-shrink: 0;
+  transform: translate(-24px, 30px);
 }
 
 .profile-ring-outer {
