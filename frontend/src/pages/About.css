@@ -160,16 +160,34 @@
   background: rgba(139, 92, 246, 0.15);
 }
 
+/* About Page Section Spacing */
+.about-page .section {
+  padding: 48px 0;
+}
+
+.about-page .section-header {
+  margin-bottom: 40px;
+}
+
+/* Section 1: Bio */
+.about-bio-grid {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 60px;
+  align-items: center;
+}
+
 /* Section 3: Skills */
 .skills-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 24px;
 }
 
 .skill-category {
-  padding: 28px;
+  padding: 24px;
 }
+
 
 .skill-category-header {
   display: flex;

@@ -7,17 +7,27 @@ import {
 } from 'react-icons/fi';
 import './About.css';
 
-/* ── Scroll reveal hook ─────────────────────────────────────── */
-function useReveal() {
+/* ── Scroll reveal hook (runs after data loading) ──────────────── */
+function useReveal(loading) {
   useEffect(() => {
+    if (loading) return;
     const els = document.querySelectorAll('.reveal, .reveal-left, .reveal-right');
     const obs = new IntersectionObserver(
       (entries) => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }),
-      { threshold: 0.12 }
+      { threshold: 0.05 }
     );
     els.forEach(el => obs.observe(el));
-    return () => obs.disconnect();
-  }, []);
+
+    // Fallback timer to ensure headers are ALWAYS visible even if observer delays
+    const timer = setTimeout(() => {
+      els.forEach(el => el.classList.add('visible'));
+    }, 150);
+
+    return () => {
+      clearTimeout(timer);
+      obs.disconnect();
+    };
+  }, [loading]);
 }
 
 /* ── Animated Counter ───────────────────────────────────────── */
@@ -39,7 +49,7 @@ function Counter({ target, suffix = '' }) {
           if (cur >= num) clearInterval(timer);
         }, 30);
       }
-    }, { threshold: 0.5 });
+    }, { threshold: 0.3 });
     if (ref.current) obs.observe(ref.current);
     return () => obs.disconnect();
   }, [target]);
@@ -55,7 +65,7 @@ function SkillBar({ name, level, delay }) {
   useEffect(() => {
     const obs = new IntersectionObserver(([e]) => {
       if (e.isIntersecting) { setTimeout(() => setAnimate(true), delay); }
-    }, { threshold: 0.3 });
+    }, { threshold: 0.2 });
     if (ref.current) obs.observe(ref.current);
     return () => obs.disconnect();
   }, [delay]);
@@ -81,10 +91,10 @@ function TimelineCard({ item, idx }) {
   return (
     <motion.div
       className="timeline-item"
-      initial={{ opacity: 0, x: idx % 2 === 0 ? -40 : 40 }}
+      initial={{ opacity: 0, x: idx % 2 === 0 ? -30 : 30 }}
       whileInView={{ opacity: 1, x: 0 }}
-      viewport={{ once: true, margin: '-60px' }}
-      transition={{ duration: 0.5, delay: idx * 0.1 }}
+      viewport={{ once: true, margin: '-40px' }}
+      transition={{ duration: 0.4, delay: idx * 0.1 }}
     >
       <div className="timeline-dot">
         <span>{item.icon || '🎓'}</span>
@@ -122,14 +132,14 @@ function TimelineCard({ item, idx }) {
 /* ── ABOUT PAGE ─────────────────────────────────────────────── */
 export default function About() {
   const { data, loading } = usePortfolio();
-  useReveal();
+  useReveal(loading);
 
   const profile        = data?.profile        || {};
   const education      = data?.education      || [];
   const extracurriculars = data?.extracurriculars || [];
 
   const skills = profile.skills || {};
-  const social = profile.social || {};
+  const social = profile.socialLinks || profile.social || {};
 
   const quickCounters = [
     { label: 'Years Coding',    value: '3',   suffix: '+' },
@@ -162,7 +172,6 @@ export default function About() {
     { title: 'Core Coursework',          icon: '📚', items: activeSkills.coursework },
   ];
 
-
   if (loading) return (
     <div className="page loading-container">
       <div className="spinner" />
@@ -187,9 +196,8 @@ export default function About() {
             {/* Photo */}
             <motion.div
               className="about-photo-wrap reveal-left"
-              initial={{ opacity: 0, x: -50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
+              initial={{ opacity: 0, x: -40 }}
+              animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6 }}
             >
               <div className="about-photo-frame">
@@ -214,14 +222,13 @@ export default function About() {
             {/* Text */}
             <motion.div
               className="about-text reveal-right"
-              initial={{ opacity: 0, x: 50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
+              initial={{ opacity: 0, x: 40 }}
+              animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6 }}
             >
               <div className="section-tag"><FiCode size={14} /> About Me</div>
               <h2>Crafting Code,<br /><span className="gradient-text">One Problem at a Time</span></h2>
-              <p className="about-bio-text">{profile.bio || 'Passionate developer and competitive programmer...'}</p>
+              <p className="about-bio-text">{profile.bio || 'Final Year B.Tech CSE student at National Institute of Technology Patna with a strong foundation in Data Structures, Algorithms, Full-Stack Web Development, and AI.'}</p>
 
               {/* Info pills */}
               <div className="about-info-pills">
@@ -247,45 +254,14 @@ export default function About() {
       <div className="glow-divider" />
 
       {/* ══════════════════════════════════════════
-          SECTION 2 — INTERESTS
-      ══════════════════════════════════════════ */}
-      {profile.interests?.length > 0 && (
-        <section className="section interests-section">
-          <div className="container">
-            <div className="section-header reveal">
-              <div className="section-tag">✨ What I Love</div>
-              <h2>Interests & <span className="gradient-text">Passions</span></h2>
-            </div>
-            <div className="interests-cloud reveal">
-              {profile.interests.map((interest, i) => (
-                <motion.span
-                  key={i}
-                  className="interest-pill"
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.06, duration: 0.3 }}
-                  whileHover={{ scale: 1.08, y: -3 }}
-                >
-                  {interest}
-                </motion.span>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      <div className="glow-divider" />
-
-      {/* ══════════════════════════════════════════
-          SECTION 3 — SKILLS
+          SECTION 2 — SKILLS & TECHNOLOGIES
       ══════════════════════════════════════════ */}
       <section className="section skills-section">
         <div className="container">
-          <div className="section-header reveal">
-            <div className="section-tag">🛠️ Technical</div>
+          <div className="section-header reveal visible">
+            <div className="section-tag">🛠️ Technical Skills</div>
             <h2>Skills & <span className="gradient-text">Technologies</span></h2>
-            <p>The tools and technologies I work with every day</p>
+            <p>The core programming languages, frameworks, databases, and tools I work with every day</p>
           </div>
 
           <div className="skills-grid">
@@ -293,10 +269,10 @@ export default function About() {
               <motion.div
                 key={ci}
                 className="skill-category glass-card"
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: ci * 0.15, duration: 0.5 }}
+                transition={{ delay: ci * 0.1, duration: 0.4 }}
               >
                 <div className="skill-category-header">
                   <span className="skill-cat-icon">{cat.icon}</span>
@@ -304,7 +280,7 @@ export default function About() {
                 </div>
                 <div className="skill-bars">
                   {cat.items.map((s, si) => (
-                    <SkillBar key={si} name={s.name} level={s.level} delay={si * 80} />
+                    <SkillBar key={si} name={s.name} level={s.level} delay={si * 60} />
                   ))}
                 </div>
               </motion.div>
@@ -314,13 +290,13 @@ export default function About() {
           {/* Soft Skills */}
           {skills.softSkills?.length > 0 && (
             <motion.div
-              className="soft-skills-wrap reveal"
+              className="soft-skills-wrap reveal visible"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: 0.4 }}
+              transition={{ delay: 0.3 }}
             >
-              <h3 className="soft-skills-title">Soft Skills</h3>
+              <h3 className="soft-skills-title">Soft Skills & Core Competencies</h3>
               <div className="soft-skills-cloud">
                 {skills.softSkills.map((s, i) => (
                   <span key={i} className="soft-skill-pill">{s}</span>
@@ -334,14 +310,14 @@ export default function About() {
       <div className="glow-divider" />
 
       {/* ══════════════════════════════════════════
-          SECTION 4 — EDUCATION TIMELINE
+          SECTION 3 — EDUCATION TIMELINE
       ══════════════════════════════════════════ */}
       <section className="section education-section">
         <div className="container">
-          <div className="section-header reveal">
-            <div className="section-tag">🎓 Academic</div>
+          <div className="section-header reveal visible">
+            <div className="section-tag">🎓 Academic Journey</div>
             <h2>Education <span className="gradient-text">Timeline</span></h2>
-            <p>My academic journey and key milestones</p>
+            <p>My academic background from NIT Patna to High School</p>
           </div>
 
           {education.length > 0 ? (
@@ -363,14 +339,14 @@ export default function About() {
       <div className="glow-divider" />
 
       {/* ══════════════════════════════════════════
-          SECTION 5 — EXTRA-CURRICULARS
+          SECTION 4 — POSITIONS OF RESPONSIBILITY
       ══════════════════════════════════════════ */}
       <section className="section extras-section">
         <div className="container">
-          <div className="section-header reveal">
-            <div className="section-tag">🌟 Beyond Code</div>
-            <h2>Extra <span className="gradient-text">Curriculars</span></h2>
-            <p>Activities and contributions beyond academics</p>
+          <div className="section-header reveal visible">
+            <div className="section-tag">🌟 Leadership & Community</div>
+            <h2>Positions of <span className="gradient-text">Responsibility</span></h2>
+            <p>Key leadership roles, event organization, and mentoring initiatives at NIT Patna</p>
           </div>
 
           {extracurriculars.length > 0 ? (
@@ -379,11 +355,11 @@ export default function About() {
                 <motion.div
                   key={item._id || i}
                   className="extra-card glass-card"
-                  initial={{ opacity: 0, y: 30 }}
+                  initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ delay: i * 0.1, duration: 0.5 }}
-                  whileHover={{ y: -6 }}
+                  transition={{ delay: i * 0.1, duration: 0.4 }}
+                  whileHover={{ y: -4 }}
                 >
                   <div className="extra-icon">{item.icon || '🌟'}</div>
                   <h3 className="extra-title">{item.title}</h3>
