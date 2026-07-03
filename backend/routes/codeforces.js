@@ -13,20 +13,23 @@ router.get('/stats/:handle', async (req, res) => {
 
   try {
     const [userRes, ratingRes, submissionsRes] = await Promise.all([
-      axios.get(`${CF}/user.info?handles=${handle}`, { timeout: 12000 }),
-      axios.get(`${CF}/user.rating?handle=${handle}`, { timeout: 12000 }),
-      axios.get(`${CF}/user.status?handle=${handle}&from=1&count=500`, { timeout: 15000 }),
+      axios.get(`${CF}/user.info?handles=${handle}`, { timeout: 15000 }),
+      axios.get(`${CF}/user.rating?handle=${handle}`, { timeout: 15000 }),
+      axios.get(`${CF}/user.status?handle=${handle}`, { timeout: 20000 }), // fetch ALL submissions
     ]);
 
     const user    = userRes.data.result[0];
-    const history = ratingRes.data.result;
-    const subs    = submissionsRes.data.result;
+    const history = ratingRes.data.result || [];
+    const subs    = submissionsRes.data.result || [];
 
-    // Count unique solved problems
+    // Count ALL unique solved problems accurately
     const solved = new Set();
-    subs.filter(s => s.verdict === 'OK').forEach(s =>
-      solved.add(`${s.problem.contestId}-${s.problem.index}`)
-    );
+    subs.forEach(s => {
+      if (s.verdict === 'OK' && s.problem) {
+        const pKey = s.problem.contestId ? `${s.problem.contestId}-${s.problem.index}` : s.problem.name;
+        solved.add(pKey);
+      }
+    });
 
     const ratingHistory = history.map(h => ({
       rating:      h.newRating,
@@ -41,7 +44,7 @@ router.get('/stats/:handle', async (req, res) => {
       maxRating:      user.maxRating   || 0,
       rank:           user.rank        || 'unrated',
       maxRank:        user.maxRank     || 'unrated',
-      contribution:   user.contribution,
+      contribution:   user.contribution || 0,
       problemsSolved: solved.size,
       contestsCount:  history.length,
       ratingHistory,
