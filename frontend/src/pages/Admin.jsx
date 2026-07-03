@@ -927,106 +927,109 @@ export default function Admin() {
               </div>
 
               <form onSubmit={handleSaveProject} className="admin-form">
-                <div className="form-row grid-2">
-                  <div className="form-field">
-                    <label>Project Title *</label>
-                    <input
-                      type="text"
-                      required
-                      value={projectFormData.title}
-                      onChange={e => setProjectFormData({ ...projectFormData, title: e.target.value })}
-                    />
-                  </div>
-                  <div className="form-field">
-                    <label>Category</label>
-                    <select
-                      value={projectFormData.category}
-                      onChange={e => setProjectFormData({ ...projectFormData, category: e.target.value })}
-                    >
-                      <option value="Web Dev">Web Dev</option>
-                      <option value="ML/AI">ML/AI</option>
-                      <option value="DSA">DSA</option>
-                      <option value="App">App</option>
-                      <option value="CLI">CLI</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div className="form-field">
-                  <label>Description *</label>
-                  <textarea
-                    rows="3"
-                    required
-                    value={projectFormData.description}
-                    onChange={e => setProjectFormData({ ...projectFormData, description: e.target.value })}
-                  />
-                </div>
-
-                <div className="form-field">
-                  <label>Key Features & Architecture Highlights (One bullet point per line)</label>
-                  <textarea
-                    rows="4"
-                    placeholder="Multi-Role Dashboards for 4 user types&#10;Advanced Auth with JWT & OTP&#10;Mobile-First Responsive UX"
-                    value={projectFormData.features}
-                    onChange={e => setProjectFormData({ ...projectFormData, features: e.target.value })}
-                  />
-                </div>
-
-                <div className="form-field">
-                  <label>Tech Stack (Comma Separated)</label>
-                  <input
-                    type="text"
-                    placeholder="React, Node.js, MongoDB, TailwindCSS"
-                    value={projectFormData.tech}
-                    onChange={e => setProjectFormData({ ...projectFormData, tech: e.target.value })}
-                  />
-                </div>
-
-                <div className="form-row grid-2">
-                  <div className="form-field">
-                    <label>GitHub Repository Link</label>
-                    <input
-                      type="text"
-                      placeholder="https://github.com/username/repo"
-                      value={projectFormData.github}
-                      onChange={e => setProjectFormData({ ...projectFormData, github: e.target.value })}
-                    />
-                  </div>
-                  <div className="form-field">
-                    <label>Live Demo Link</label>
-                    <input
-                      type="text"
-                      placeholder="https://myproject.vercel.app"
-                      value={projectFormData.live}
-                      onChange={e => setProjectFormData({ ...projectFormData, live: e.target.value })}
-                    />
-                  </div>
-                </div>
-
-                <div className="form-row grid-2">
-                  <div className="form-field">
-                    <label>Image Thumbnail URL</label>
-                    <input
-                      type="text"
-                      placeholder="/assets/images/project.png or image link"
-                      value={projectFormData.image}
-                      onChange={e => setProjectFormData({ ...projectFormData, image: e.target.value })}
-                    />
-                  </div>
-
-                  <div className="form-field checkbox-field">
-                    <label>
+                <div className="modal-body" style={{ maxHeight: '58vh', overflowY: 'auto', paddingRight: '8px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                  <div className="form-row grid-2">
+                    <div className="form-field">
+                      <label>Project Title *</label>
                       <input
-                        type="checkbox"
-                        checked={projectFormData.featured}
-                        onChange={e => setProjectFormData({ ...projectFormData, featured: e.target.checked })}
+                        type="text"
+                        required
+                        value={projectFormData.title}
+                        onChange={e => setProjectFormData({ ...projectFormData, title: e.target.value })}
                       />
-                      <span>Feature this project in Hero spotlight ⭐</span>
-                    </label>
+                    </div>
+                    <div className="form-field">
+                      <label>Category</label>
+                      <select
+                        value={projectFormData.category}
+                        onChange={e => setProjectFormData({ ...projectFormData, category: e.target.value })}
+                      >
+                        <option value="Web Dev">Web Dev</option>
+                        <option value="ML/AI">ML/AI</option>
+                        <option value="DSA">DSA</option>
+                        <option value="App">App</option>
+                        <option value="CLI">CLI</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="form-field">
+                    <label>Description *</label>
+                    <textarea
+                      rows="3"
+                      required
+                      value={projectFormData.description}
+                      onChange={e => setProjectFormData({ ...projectFormData, description: e.target.value })}
+                    />
+                  </div>
+
+                  <div className="form-field">
+                    <label>Key Features & Architecture Highlights (One bullet point per line)</label>
+                    <textarea
+                      rows="4"
+                      placeholder="Multi-Role Dashboards for 4 user types&#10;Advanced Auth with JWT & OTP&#10;Mobile-First Responsive UX"
+                      value={projectFormData.features}
+                      onChange={e => setProjectFormData({ ...projectFormData, features: e.target.value })}
+                    />
+                  </div>
+
+                  <div className="form-field">
+                    <label>Tech Stack (Comma Separated)</label>
+                    <input
+                      type="text"
+                      placeholder="React, Node.js, MongoDB, TailwindCSS"
+                      value={projectFormData.tech}
+                      onChange={e => setProjectFormData({ ...projectFormData, tech: e.target.value })}
+                    />
+                  </div>
+
+                  <div className="form-row grid-2">
+                    <div className="form-field">
+                      <label>GitHub Repository Link</label>
+                      <input
+                        type="text"
+                        placeholder="https://github.com/username/repo"
+                        value={projectFormData.github}
+                        onChange={e => setProjectFormData({ ...projectFormData, github: e.target.value })}
+                      />
+                    </div>
+                    <div className="form-field">
+                      <label>Live Demo Link</label>
+                      <input
+                        type="text"
+                        placeholder="https://myproject.vercel.app"
+                        value={projectFormData.live}
+                        onChange={e => setProjectFormData({ ...projectFormData, live: e.target.value })}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="form-row grid-2">
+                    <div className="form-field">
+                      <label>Project Cover Page / Thumbnail URL *</label>
+                      <input
+                        type="text"
+                        required
+                        placeholder="/assets/images/project.png or image link"
+                        value={projectFormData.image}
+                        onChange={e => setProjectFormData({ ...projectFormData, image: e.target.value })}
+                      />
+                    </div>
+
+                    <div className="form-field checkbox-field">
+                      <label>
+                        <input
+                          type="checkbox"
+                          checked={projectFormData.featured}
+                          onChange={e => setProjectFormData({ ...projectFormData, featured: e.target.checked })}
+                        />
+                        <span>Feature this project in Hero spotlight ⭐</span>
+                      </label>
+                    </div>
                   </div>
                 </div>
 
-                <div className="modal-actions">
+                <div className="modal-actions" style={{ borderTop: '1px solid var(--border)', paddingTop: '16px', marginTop: '12px' }}>
                   <button type="button" className="btn btn-outline btn-sm" onClick={() => setProjectModal(false)}>
                     Cancel
                   </button>
