@@ -143,4 +143,19 @@ router.delete('/achievements/:id', async (req, res) => {
   } catch (err) { res.status(400).json({ success: false, message: err.message }); }
 });
 
+// ── EXTRACURRICULARS / POSITIONS ──────────────────────────────
+router.post('/extracurriculars', async (req, res) => {
+  try {
+    const item = await Extracurricular.create(req.body);
+    res.status(201).json({ success: true, data: item });
+  } catch (err) { res.status(400).json({ success: false, message: err.message }); }
+});
+
+router.delete('/extracurriculars/:id', async (req, res) => {
+  try {
+    await Extracurricular.findByIdAndDelete(req.params.id);
+    res.json({ success: true, message: 'Deleted' });
+  } catch (err) { res.status(400).json({ success: false, message: err.message }); }
+});
+
 export default router;

@@ -42,9 +42,14 @@
   margin-top: 12px;
 }
 
-.input-group input {
+.password-group {
+  position: relative;
   width: 100%;
-  padding: 14px 18px;
+}
+
+.password-group input {
+  width: 100%;
+  padding: 14px 44px 14px 18px;
   border-radius: var(--radius-sm);
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid var(--border);
@@ -55,20 +60,35 @@
   transition: var(--transition-fast);
 }
 
-.input-group input:focus {
+.password-group input:focus {
   outline: none;
   border-color: var(--violet);
   box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
 }
 
+.password-toggle-btn {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.password-toggle-btn:hover {
+  color: var(--violet-light);
+}
+
 .login-btn {
   width: 100%;
   justify-content: center;
-}
-
-.passcode-hint {
-  font-size: 0.78rem;
-  color: var(--text-muted);
 }
 
 /* Dashboard Layout */

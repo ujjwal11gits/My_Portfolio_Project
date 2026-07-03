@@ -6,11 +6,13 @@ import {
   createProject, updateProject, deleteProject,
   createEducation, deleteEducation,
   createAchievement, deleteAchievement,
+  createExtracurricular, deleteExtracurricular,
   getAllPortfolio
 } from '../utils/api';
 import {
   FiLock, FiUnlock, FiSave, FiPlus, FiTrash2, FiEdit2,
-  FiUser, FiFolder, FiBook, FiAward, FiBarChart2, FiExternalLink, FiLogOut
+  FiUser, FiFolder, FiBook, FiAward, FiBarChart2, FiExternalLink, FiLogOut,
+  FiEye, FiEyeOff, FiStar, FiUsers
 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import { formatResumeUrl } from '../utils/resumeHelper';
@@ -22,6 +24,7 @@ export default function Admin() {
   // Authentication state
   const [authenticated, setAuthenticated] = useState(false);
   const [passcode, setPasscode]           = useState('');
+  const [showPassword, setShowPassword]   = useState(false);
   const [verifying, setVerifying]         = useState(false);
 
   // Active Tab
@@ -35,7 +38,7 @@ export default function Admin() {
   const [projectModal, setProjectModal] = useState(false);
   const [editingProject, setEditingProject] = useState(null);
   const [projectFormData, setProjectFormData] = useState({
-    title: '', category: 'Web Dev', description: '', image: '', tech: '', github: '', live: '', featured: false,
+    title: '', category: 'Web Dev', description: '', image: '', tech: '', features: '', github: '', live: '', featured: false,
   });
 
   // Education state & adding
@@ -50,26 +53,32 @@ export default function Admin() {
     name: '', issuer: '', date: '', type: 'certification', link: '', description: '', position: '',
   });
 
+  // Extracurriculars / Positions state & adding
+  const [extracurricularsList, setExtracurricularsList] = useState([]);
+  const [extraFormData, setExtraFormData]               = useState({
+    title: '', organization: '', description: '', icon: '🌟',
+  });
+
   // Check existing session
   useEffect(() => {
     const isAuth = sessionStorage.getItem('admin_authenticated');
     if (isAuth === 'true') setAuthenticated(true);
   }, []);
 
-  // Sync data from PortfolioContext
+  // Populate data when loaded
   useEffect(() => {
     if (portfolioData) {
       if (portfolioData.profile) setProfileForm(portfolioData.profile);
       if (portfolioData.projects) setProjectsList(portfolioData.projects);
       if (portfolioData.education) setEducationList(portfolioData.education);
       if (portfolioData.achievements) setAchievementsList(portfolioData.achievements);
+      if (portfolioData.extracurriculars) setExtracurricularsList(portfolioData.extracurriculars);
     }
   }, [portfolioData]);
 
-  // Handle Login
   const handleLogin = async (e) => {
     e.preventDefault();
-    if (!passcode) return toast.error('Please enter Admin passcode');
+    if (!passcode) return toast.error('Please enter passcode');
 
     setVerifying(true);
     try {
@@ -77,7 +86,7 @@ export default function Admin() {
       if (res.data?.success) {
         sessionStorage.setItem('admin_authenticated', 'true');
         setAuthenticated(true);
-        toast.success('Welcome to Admin Command Center!');
+        toast.success('Admin Authenticated! Welcome Ujjwal ⚡');
       }
     } catch (err) {
       toast.error(err.response?.data?.message || 'Invalid Passcode');
@@ -95,7 +104,7 @@ export default function Admin() {
   const refreshGlobalData = async () => {
     try {
       const res = await getAllPortfolio();
-      setPortfolioData(res.data.data);
+      if (setPortfolioData) setPortfolioData(res.data.data);
     } catch (e) { console.error('Failed refreshing context:', e); }
   };
 
@@ -203,8 +212,28 @@ export default function Admin() {
     } catch (err) { toast.error('Failed deleting achievement'); }
   };
 
+  // Extracurricular / Position Add & Delete
+  const handleAddExtracurricular = async (e) => {
+    e.preventDefault();
+    try {
+      await createExtracurricular(extraFormData);
+      toast.success('Position / Extracurricular added!');
+      setExtraFormData({ title: '', organization: '', description: '', icon: '🌟' });
+      await refreshGlobalData();
+    } catch (err) { toast.error('Failed adding position'); }
+  };
+
+  const handleDeleteExtracurricular = async (id) => {
+    if (!window.confirm('Delete this position?')) return;
+    try {
+      await deleteExtracurricular(id);
+      toast.success('Position removed');
+      await refreshGlobalData();
+    } catch (err) { toast.error('Failed deleting position'); }
+  };
+
   /* ═════════════════════════════════════════════════════════════
-     PASSCODE LOGIN SCREEN
+     PASSCODE LOGIN SCREEN (SECURE - NO PASSWORD HINTS)
   ═════════════════════════════════════════════════════════════ */
   if (!authenticated) {
     return (
@@ -217,21 +246,27 @@ export default function Admin() {
           <p>Enter your secret passcode to manage your portfolio</p>
 
           <form onSubmit={handleLogin} className="admin-login-form">
-            <div className="input-group">
+            <div className="input-group password-group">
               <input
-                type="password"
-                placeholder="Enter Admin Passcode..."
+                type={showPassword ? 'text' : 'password'}
+                placeholder="Enter Secret Passcode..."
                 value={passcode}
                 onChange={e => setPasscode(e.target.value)}
                 autoFocus
               />
+              <button
+                type="button"
+                className="password-toggle-btn"
+                onClick={() => setShowPassword(p => !p)}
+                title={showPassword ? 'Hide password' : 'Show password'}
+              >
+                {showPassword ? <FiEyeOff /> : <FiEye />}
+              </button>
             </div>
             <button type="submit" className="btn btn-primary login-btn" disabled={verifying}>
               {verifying ? 'Verifying...' : 'Unlock Admin Panel'} <FiUnlock />
             </button>
           </form>
-
-          <span className="passcode-hint mono">Default passcode: ujjwal2026</span>
         </div>
       </div>
     );
@@ -276,6 +311,9 @@ export default function Admin() {
           </button>
           <button className={`admin-tab ${activeTab === 'achievements' ? 'active' : ''}`} onClick={() => setActiveTab('achievements')}>
             <FiAward /> Achievements ({achievementsList.length})
+          </button>
+          <button className={`admin-tab ${activeTab === 'positions' ? 'active' : ''}`} onClick={() => setActiveTab('positions')}>
+            <FiUsers /> Positions & Leadership ({extracurricularsList.length})
           </button>
         </div>
 
@@ -386,6 +424,41 @@ export default function Admin() {
                 </div>
               </div>
 
+              {/* Interests & Soft Skills Section */}
+              <div className="admin-section-divider">
+                <h4>✨ Interests & Soft Skills</h4>
+              </div>
+
+              <div className="form-row grid-2">
+                <div className="form-field">
+                  <label>Interests & Passions (Comma separated)</label>
+                  <input
+                    type="text"
+                    placeholder="Competitive Programming, Web Development, Machine Learning"
+                    value={Array.isArray(profileForm.interests) ? profileForm.interests.join(', ') : profileForm.interests || ''}
+                    onChange={e => setProfileForm({
+                      ...profileForm,
+                      interests: e.target.value.split(',').map(s => s.trim()).filter(Boolean)
+                    })}
+                  />
+                </div>
+                <div className="form-field">
+                  <label>Soft Skills & Competencies (Comma separated)</label>
+                  <input
+                    type="text"
+                    placeholder="Problem Solving, Team Leadership, Critical Thinking"
+                    value={Array.isArray(profileForm.skills?.softSkills) ? profileForm.skills.softSkills.join(', ') : profileForm.skills?.softSkills || ''}
+                    onChange={e => setProfileForm({
+                      ...profileForm,
+                      skills: {
+                        ...(profileForm.skills || {}),
+                        softSkills: e.target.value.split(',').map(s => s.trim()).filter(Boolean)
+                      }
+                    })}
+                  />
+                </div>
+              </div>
+
               {/* Coding Usernames Section */}
               <div className="admin-section-divider">
                 <h4>💻 Coding Usernames (Live Platform Sync)</h4>
@@ -464,10 +537,11 @@ export default function Admin() {
                   <label>GitHub Profile Link</label>
                   <input
                     type="text"
-                    value={profileForm.social?.github || ''}
+                    value={profileForm.social?.github || profileForm.socialLinks?.github || ''}
                     onChange={e => setProfileForm({
                       ...profileForm,
-                      social: { ...profileForm.social, github: e.target.value }
+                      social: { ...profileForm.social, github: e.target.value },
+                      socialLinks: { ...profileForm.socialLinks, github: e.target.value }
                     })}
                   />
                 </div>
@@ -475,10 +549,11 @@ export default function Admin() {
                   <label>LinkedIn Profile Link</label>
                   <input
                     type="text"
-                    value={profileForm.social?.linkedin || ''}
+                    value={profileForm.social?.linkedin || profileForm.socialLinks?.linkedin || ''}
                     onChange={e => setProfileForm({
                       ...profileForm,
-                      social: { ...profileForm.social, linkedin: e.target.value }
+                      social: { ...profileForm.social, linkedin: e.target.value },
+                      socialLinks: { ...profileForm.socialLinks, linkedin: e.target.value }
                     })}
                   />
                 </div>
@@ -489,10 +564,11 @@ export default function Admin() {
                   <label>Twitter / X Link</label>
                   <input
                     type="text"
-                    value={profileForm.social?.twitter || ''}
+                    value={profileForm.social?.twitter || profileForm.socialLinks?.twitter || ''}
                     onChange={e => setProfileForm({
                       ...profileForm,
-                      social: { ...profileForm.social, twitter: e.target.value }
+                      social: { ...profileForm.social, twitter: e.target.value },
+                      socialLinks: { ...profileForm.socialLinks, twitter: e.target.value }
                     })}
                   />
                 </div>
@@ -500,10 +576,11 @@ export default function Admin() {
                   <label>Instagram Link</label>
                   <input
                     type="text"
-                    value={profileForm.social?.instagram || ''}
+                    value={profileForm.social?.instagram || profileForm.socialLinks?.instagram || ''}
                     onChange={e => setProfileForm({
                       ...profileForm,
-                      social: { ...profileForm.social, instagram: e.target.value }
+                      social: { ...profileForm.social, instagram: e.target.value },
+                      socialLinks: { ...profileForm.socialLinks, instagram: e.target.value }
                     })}
                   />
                 </div>
@@ -528,7 +605,7 @@ export default function Admin() {
                 className="btn btn-primary btn-sm"
                 onClick={() => {
                   setEditingProject(null);
-                  setProjectFormData({ title: '', category: 'Web Dev', description: '', image: '', tech: '', github: '', live: '', featured: false });
+                  setProjectFormData({ title: '', category: 'Web Dev', description: '', image: '', tech: '', features: '', github: '', live: '', featured: false });
                   setProjectModal(true);
                 }}
               >
@@ -555,6 +632,7 @@ export default function Admin() {
                           description: project.description || '',
                           image: project.image || '',
                           tech: Array.isArray(project.tech) ? project.tech.join(', ') : project.tech || '',
+                          features: Array.isArray(project.features) ? project.features.join('\n') : project.features || '',
                           github: project.github || '',
                           live: project.live || '',
                           featured: !!project.featured,
@@ -758,6 +836,84 @@ export default function Admin() {
           </motion.div>
         )}
 
+        {/* ── TAB 5: POSITIONS OF RESPONSIBILITY MANAGER ── */}
+        {activeTab === 'positions' && (
+          <motion.div className="admin-panel-content glass-card" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+            <div className="panel-header">
+              <h3>Add Position of Responsibility / Leadership Role</h3>
+            </div>
+
+            <form onSubmit={handleAddExtracurricular} className="admin-form" style={{ marginBottom: 36 }}>
+              <div className="form-row grid-2">
+                <div className="form-field">
+                  <label>Role / Position Title *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Technical Lead / Event Coordinator"
+                    value={extraFormData.title}
+                    onChange={e => setExtraFormData({ ...extraFormData, title: e.target.value })}
+                  />
+                </div>
+                <div className="form-field">
+                  <label>Organization / Society Name *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="GYB Society, NIT Patna"
+                    value={extraFormData.organization}
+                    onChange={e => setExtraFormData({ ...extraFormData, organization: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <div className="form-row grid-2">
+                <div className="form-field">
+                  <label>Description / Responsibilities</label>
+                  <input
+                    type="text"
+                    placeholder="Organized technical events and mentored junior developers"
+                    value={extraFormData.description}
+                    onChange={e => setExtraFormData({ ...extraFormData, description: e.target.value })}
+                  />
+                </div>
+                <div className="form-field">
+                  <label>Icon Emoji</label>
+                  <input
+                    type="text"
+                    placeholder="🎯 or 💻"
+                    value={extraFormData.icon}
+                    onChange={e => setExtraFormData({ ...extraFormData, icon: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <button type="submit" className="btn btn-primary btn-sm">
+                <FiPlus /> Add Position
+              </button>
+            </form>
+
+            <div className="admin-section-divider">
+              <h4>Existing Positions & Leadership Roles ({extracurricularsList.length})</h4>
+            </div>
+
+            <div className="admin-items-list">
+              {extracurricularsList.map(extra => (
+                <div key={extra._id} className="admin-item-card">
+                  <div className="admin-item-info">
+                    <span className="item-badge">{extra.icon || '🌟'}</span>
+                    <h4>{extra.title}</h4>
+                    <p>{extra.organization} {extra.description && `- ${extra.description}`}</p>
+                  </div>
+                  <button className="action-btn delete" onClick={() => handleDeleteExtracurricular(extra._id)}>
+                    <FiTrash2 /> Remove
+                  </button>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        )}
+
       </div>
 
       {/* ── MODAL: ADD / EDIT PROJECT ── */}
@@ -803,6 +959,16 @@ export default function Admin() {
                     required
                     value={projectFormData.description}
                     onChange={e => setProjectFormData({ ...projectFormData, description: e.target.value })}
+                  />
+                </div>
+
+                <div className="form-field">
+                  <label>Key Features & Architecture Highlights (One bullet point per line)</label>
+                  <textarea
+                    rows="4"
+                    placeholder="Multi-Role Dashboards for 4 user types&#10;Advanced Auth with JWT & OTP&#10;Mobile-First Responsive UX"
+                    value={projectFormData.features}
+                    onChange={e => setProjectFormData({ ...projectFormData, features: e.target.value })}
                   />
                 </div>
 

@@ -38,4 +38,7 @@ export const deleteEducation     = (id)       => api.delete(`/portfolio/educatio
 export const createAchievement   = (data)     => api.post('/portfolio/achievements', data);
 export const deleteAchievement   = (id)       => api.delete(`/portfolio/achievements/${id}`);
 
+export const createExtracurricular = (data)   => api.post('/portfolio/extracurriculars', data);
+export const deleteExtracurricular = (id)     => api.delete(`/portfolio/extracurriculars/${id}`);
+
 export default api;
