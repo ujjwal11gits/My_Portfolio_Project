@@ -6,7 +6,11 @@ dns.setDefaultResultOrder('ipv4first');
 
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(process.env.MONGO_URI, {
+    let uri = process.env.MONGO_URI || '';
+    // Clean directConnection parameter for cloud production (MongoDB Atlas SRV does not support directConnection)
+    uri = uri.replace(/[?&]directConnection=(true|false)/gi, '');
+
+    const conn = await mongoose.connect(uri, {
       serverSelectionTimeoutMS: 20000,
       socketTimeoutMS: 45000,
     });
