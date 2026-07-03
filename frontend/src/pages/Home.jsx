@@ -261,8 +261,10 @@ export default function Home() {
       </div>
 
       {/* ── Quick Stats Bar ── */}
+      <div style={{ height: '72px' }} />
       <motion.div
         className="hero-stats container"
+        style={{ marginTop: 0 }}
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.8, duration: 0.6 }}
@@ -272,6 +274,7 @@ export default function Home() {
         <StatCard icon={FiTrendingUp} value="1750+" label="LeetCode Max" delay={1.0} />
         <StatCard icon={FiLayers} value="20+" label="Projects Built" delay={1.1} />
       </motion.div>
+      <div style={{ height: '72px' }} />
 
       {/* ── Featured Call-To-Action Section ── */}
       <motion.section
