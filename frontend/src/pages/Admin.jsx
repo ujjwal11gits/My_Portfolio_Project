@@ -15,7 +15,7 @@ import {
   FiEye, FiEyeOff, FiStar, FiUsers
 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
-import { formatResumeUrl } from '../utils/resumeHelper';
+import { formatResumeUrl, formatImageUrl } from '../utils/resumeHelper';
 import './Admin.css';
 
 export default function Admin() {
@@ -113,6 +113,7 @@ export default function Admin() {
     e.preventDefault();
     const formattedProfile = {
       ...profileForm,
+      photoUrl: formatImageUrl(profileForm.photoUrl),
       resumeUrl: formatResumeUrl(profileForm.resumeUrl),
     };
     toast.loading('Saving profile data...', { id: 'save-profile' });
@@ -132,6 +133,7 @@ export default function Admin() {
     e.preventDefault();
     const payload = {
       ...projectFormData,
+      image: formatImageUrl(projectFormData.image),
       tech: typeof projectFormData.tech === 'string'
         ? projectFormData.tech.split(',').map(s => s.trim()).filter(Boolean)
         : projectFormData.tech,
