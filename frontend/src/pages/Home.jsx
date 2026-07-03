@@ -273,16 +273,36 @@ export default function Home() {
         <StatCard icon={FiLayers} value="20+" label="Projects Built" delay={1.1} />
       </motion.div>
 
-      {/* ── Scroll Indicator ── */}
-      <motion.div
-        className="scroll-indicator"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.4 }}
+      {/* ── Featured Call-To-Action Section ── */}
+      <motion.section
+        className="home-cta-section container"
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ delay: 0.2, duration: 0.6 }}
       >
-        <div className="scroll-dot" />
-        <span>Scroll to explore</span>
-      </motion.div>
+        <div className="home-cta-card glass-card">
+          <div className="cta-content">
+            <span className="section-tag">🤝 Let's Connect</span>
+            <h2 className="cta-title">Let's Build Something <span className="gradient-text">Amazing Together</span> 🚀</h2>
+            <p className="cta-desc">
+              Have an exciting project, full-time engineering role, or freelance collaboration in mind?
+              Let's connect and turn high-impact ideas into reality.
+            </p>
+            <div className="cta-buttons">
+              <Link to="/contact" className="btn btn-primary">
+                Get In Touch <FiArrowRight />
+              </Link>
+              <button
+                onClick={e => handleOpenResume(e, profile?.resumeUrl)}
+                className="btn btn-outline"
+              >
+                <FiDownload /> Download Resume
+              </button>
+            </div>
+          </div>
+        </div>
+      </motion.section>
     </div>
   );
 }

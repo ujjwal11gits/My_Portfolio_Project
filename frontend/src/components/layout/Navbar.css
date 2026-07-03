@@ -20,14 +20,39 @@
 /* Logo */
 .navbar-logo {
   font-size: 1.3rem; font-weight: 800; letter-spacing: -0.02em;
-  display: flex; align-items: center; gap: 2px;
+  display: flex; align-items: center; gap: 4px;
   font-family: 'JetBrains Mono', monospace;
   transition: var(--transition);
   white-space: nowrap;
+  padding: 4px 10px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(139, 92, 246, 0.15);
 }
-.navbar-logo:hover { opacity: 0.85; transform: scale(1.02); }
-.logo-bracket { color: var(--text-muted); font-weight: 400; }
-.logo-name    { margin: 0 2px; }
+.navbar-logo:hover {
+  background: rgba(139, 92, 246, 0.08);
+  border-color: rgba(139, 92, 246, 0.35);
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.2);
+  transform: translateY(-1px);
+}
+.logo-status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 10px #10b981;
+  margin-right: 2px;
+  animation: pulseGreen 2s infinite;
+}
+@keyframes pulseGreen {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+  70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+.logo-bracket { color: var(--cyan-light); font-weight: 600; opacity: 0.85; }
+.logo-name    { margin: 0 1px; font-weight: 800; }
+.logo-ext     { color: var(--violet-light); font-size: 1.1rem; font-weight: 600; opacity: 0.8; }
+
 
 /* Desktop links */
 .navbar-links {

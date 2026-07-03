@@ -37,10 +37,12 @@ export default function Navbar() {
 
         {/* Logo */}
         <NavLink to="/" className="navbar-logo">
+          <span className="logo-status-dot" title="Available for opportunities" />
           <span className="logo-bracket">&lt;</span>
           <span className="logo-name gradient-text">
             {name.split(' ')[0]}
           </span>
+          <span className="logo-ext">.dev</span>
           <span className="logo-bracket">/&gt;</span>
         </NavLink>
 

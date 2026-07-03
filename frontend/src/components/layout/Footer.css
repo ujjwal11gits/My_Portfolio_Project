@@ -1,39 +1,52 @@
-/* ── Clean Modern Footer CSS ───────────────────────────────────── */
+/* ── Clean Modern 3-Column Footer CSS ───────────────────────────────────── */
 .footer {
   background: var(--bg-secondary);
   position: relative;
-  margin-top: 80px;
+  margin-top: 64px;
   border-top: 1px solid var(--border);
 }
 
 .footer-container {
   display: grid;
-  grid-template-columns: 1fr 380px;
-  gap: 60px;
-  align-items: center;
-  padding: 56px 24px 48px;
+  grid-template-columns: 1.4fr 1fr 1.1fr;
+  gap: 48px;
+  align-items: flex-start;
+  padding: 48px 24px;
 }
 
-/* Left Panel */
-.footer-left {
+.footer-col {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
+.footer-col-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: 0.02em;
+  margin-bottom: 4px;
+}
+
 .footer-logo {
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   font-weight: 800;
   display: inline-flex;
   align-items: center;
-  gap: 2px;
+  gap: 4px;
+}
+
+.logo-ext {
+  color: var(--violet-light);
+  font-size: 1.2rem;
+  font-weight: 600;
 }
 
 .footer-tagline {
-  font-size: 0.95rem;
+  font-size: 0.92rem;
   color: var(--text-secondary);
   line-height: 1.6;
-  max-width: 440px;
+  max-width: 360px;
 }
 
 .availability-badge {
@@ -48,7 +61,7 @@
   font-size: 0.82rem;
   font-weight: 500;
   width: fit-content;
-  margin-top: 2px;
+  margin-top: 4px;
 }
 
 .pulse-green-dot {
@@ -66,10 +79,36 @@
   100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
 }
 
+/* Nav Column */
+.footer-nav-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.footer-nav-link {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  transition: var(--transition-fast);
+}
+
+.footer-nav-link:hover {
+  color: var(--violet-light);
+  transform: translateX(3px);
+}
+
+/* Connect Column */
+.connect-desc {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
 .footer-socials {
   display: flex;
-  gap: 12px;
-  margin-top: 6px;
+  gap: 10px;
+  margin-top: 4px;
+  flex-wrap: wrap;
 }
 
 .footer-socials a {
@@ -83,42 +122,15 @@
   border: 1px solid var(--border);
   color: var(--text-secondary);
   font-size: 1rem;
-  transition: var(--transition);
+  transition: var(--transition-fast);
 }
 
 .footer-socials a:hover {
   color: var(--violet-light);
-  border-color: var(--border-hover);
-  background: var(--glass-hover);
-  transform: translateY(-3px);
+  border-color: var(--violet);
+  background: rgba(139, 92, 246, 0.15);
+  transform: translateY(-2px);
   box-shadow: 0 4px 15px rgba(139, 92, 246, 0.25);
-}
-
-/* Right CTA Box */
-.footer-cta-box {
-  padding: 28px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  background: var(--glass);
-  border: 1px solid var(--border);
-  border-radius: var(--card-radius);
-}
-
-.footer-cta-box h3 {
-  font-size: 1.15rem;
-  color: var(--text-primary);
-}
-
-.footer-cta-box p {
-  font-size: 0.88rem;
-  color: var(--text-secondary);
-  line-height: 1.5;
-}
-
-.footer-cta-btn {
-  width: fit-content;
-  margin-top: 4px;
 }
 
 /* Bottom Bar */
@@ -132,6 +144,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
 .footer-bottom p {
@@ -148,6 +162,7 @@
   color: var(--text-secondary);
   font-size: 0.85rem;
   font-weight: 500;
+  cursor: pointer;
   transition: var(--transition-fast);
 }
 
@@ -156,7 +171,7 @@
   transform: translateY(-2px);
 }
 
-@media (max-width: 850px) {
+@media (max-width: 900px) {
   .footer-container {
     grid-template-columns: 1fr;
     gap: 36px;
