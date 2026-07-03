@@ -363,9 +363,9 @@
   background: rgba(5, 5, 18, 0.88);
   backdrop-filter: blur(12px);
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  padding: 24px;
+  padding: 40px 16px;
   overflow-y: auto;
 }
 
@@ -373,15 +373,14 @@
   position: relative;
   width: 100%;
   max-width: 960px;
-  max-height: 88vh;
-  overflow-y: auto;
-  padding: 32px;
   background: #0d0d24;
   border: 1px solid rgba(139, 92, 246, 0.3);
   border-radius: 20px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(139, 92, 246, 0.15);
-  margin: auto;
+  margin: auto 0;
+  padding: 32px;
 }
+
 
 /* Custom Modal Scrollbar */
 .codolio-modal-card::-webkit-scrollbar {

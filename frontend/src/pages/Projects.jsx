@@ -12,7 +12,7 @@ import './Projects.css';
 
 const CATEGORIES = ['All', 'Web Dev', 'ML/AI', 'DSA', 'App', 'CLI'];
 
-// Technology brand colors & dots (Codolio / GitHub style)
+// Technology brand colors & dots
 const TECH_COLORS = {
   JavaScript:         '#f1e05a',
   ReactJS:            '#61dafb',
@@ -38,7 +38,6 @@ function getFeatureIcon(index) {
 export default function Projects() {
   const { data: portfolioData, loading } = usePortfolio();
   const projects = portfolioData?.projects || [];
-  const profile  = portfolioData?.profile || {};
 
   const [activeCategory, setActiveCategory] = useState('All');
   const [selectedProject, setSelectedProject] = useState(null);
@@ -140,18 +139,6 @@ export default function Projects() {
                 ))}
               </div>
 
-              {/* Key Features Bullet Badges Highlights */}
-              {featuredProject.features?.length > 0 && (
-                <div className="spotlight-features-wrap">
-                  {featuredProject.features.slice(0, 3).map((feat, i) => (
-                    <span key={i} className="feature-bullet-badge">
-                      <span className="feature-icon">{getFeatureIcon(i)}</span>
-                      {feat}
-                    </span>
-                  ))}
-                </div>
-              )}
-
               <div className="spotlight-actions">
                 <button
                   className={`spotlight-btn live-btn ${(!featuredProject.live || featuredProject.live === '#') ? 'disabled' : ''}`}
@@ -205,7 +192,7 @@ export default function Projects() {
           </div>
         </div>
 
-        {/* ── CODOLIO-STYLE PROJECTS GRID ── */}
+        {/* ── CODOLIO-STYLE PROJECTS GRID (CLEAN ORIGINAL CARD LAYOUT) ── */}
         <motion.div className="projects-grid grid-3" layout>
           <AnimatePresence>
             {filteredProjects.map((project, idx) => (
@@ -248,18 +235,6 @@ export default function Projects() {
                     ))}
                   </div>
 
-                  {/* Key Feature Badges Preview */}
-                  {project.features?.length > 0 && (
-                    <div className="card-feature-badges">
-                      {project.features.slice(0, 2).map((feat, i) => (
-                        <span key={i} className="feature-bullet-badge mini">
-                          <span className="feature-icon">{getFeatureIcon(i)}</span>
-                          {feat}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-
                   {/* Action Bar */}
                   <div className="card-action-bar">
                     <button
@@ -296,7 +271,7 @@ export default function Projects() {
       </div>
 
       {/* ═════════════════════════════════════════════════════════
-          CODOLIO-STYLE PROJECT DETAIL MODAL WITH BULLET BADGES
+          CODOLIO-STYLE PROJECT DETAIL MODAL WITH FULL SCROLLING
       ═════════════════════════════════════════════════════════ */}
       <AnimatePresence>
         {selectedProject && (
@@ -391,7 +366,7 @@ export default function Projects() {
                     <div className="modal-features-section">
                       <h4 className="features-section-title">
                         <FiLayers style={{ verticalAlign: 'middle', marginRight: 6 }} />
-                        Key Features & System Architecture Highlights:
+                        Key Features & Architecture Highlights:
                       </h4>
                       <div className="modal-features-badges-grid">
                         {selectedProject.features.map((feat, i) => (
