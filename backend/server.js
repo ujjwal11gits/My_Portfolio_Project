@@ -42,7 +42,8 @@ app.use('/api/codeforces',  codeforcesRoutes);
 app.use('/api/codechef',    codechefRoutes);
 app.use('/api/contact',     contactRoutes);
 
-// ── Health Check ────────────────────────────────────────────
+// ── Health & Root Check ──────────────────────────────────────
+app.get('/', (_, res) => res.json({ success: true, message: '🚀 Ujjwal Portfolio Backend API is Live!', health: '/api/health' }));
 app.get('/api/health', (_, res) => res.json({ status: 'ok', time: new Date().toISOString() }));
 
 // ── Error Handler ───────────────────────────────────────────
