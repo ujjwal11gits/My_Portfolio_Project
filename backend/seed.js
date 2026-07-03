@@ -59,19 +59,39 @@ const seed = async () => {
       codeforcesRank: 'Pupil',
       codechefStars: '2-Star',
     },
-    skills: [
-      { name: 'C / C++', level: 92, category: 'Languages' },
-      { name: 'JavaScript', level: 88, category: 'Languages' },
-      { name: 'Python', level: 82, category: 'Languages' },
-      { name: 'React.js', level: 90, category: 'Web' },
-      { name: 'Node.js & Express', level: 86, category: 'Web' },
-      { name: 'MongoDB', level: 85, category: 'Database' },
-      { name: 'MySQL', level: 82, category: 'Database' },
-      { name: 'Tailwind CSS / CSS3', level: 88, category: 'Web' },
-      { name: 'Data Structures & Algo', level: 94, category: 'Core' },
-      { name: 'Operating Systems & DBMS', level: 85, category: 'Core' },
-      { name: 'Git & GitHub', level: 90, category: 'Tools' },
-    ],
+    skills: {
+      languages: [
+        { name: 'C', level: 88 },
+        { name: 'C++', level: 95 },
+        { name: 'Python', level: 85 },
+        { name: 'JavaScript', level: 90 },
+      ],
+      frameworks: [
+        { name: 'ReactJS', level: 90 },
+        { name: 'NodeJS', level: 88 },
+        { name: 'ExpressJS', level: 85 },
+        { name: 'Tailwind CSS', level: 88 },
+      ],
+      databases: [
+        { name: 'MongoDB', level: 88 },
+        { name: 'MySQL', level: 85 },
+        { name: 'Optimized SQL Queries', level: 85 },
+      ],
+      tools: [
+        { name: 'VSCode', level: 92 },
+        { name: 'Git and GitHub', level: 90 },
+        { name: 'Jupyter Notebooks', level: 82 },
+        { name: 'MySQL Workbench', level: 84 },
+      ],
+      coursework: [
+        { name: 'DSA', level: 95 },
+        { name: 'Object Oriented Programming', level: 90 },
+        { name: 'Operating Systems', level: 88 },
+        { name: 'DBMS', level: 88 },
+      ],
+      interests: ['DSA', 'Web Development', 'Machine Learning'],
+      softSkills: ['Problem Solving', 'Team Leadership', 'Critical Thinking', 'Technical Communication', 'System Design'],
+    },
   });
   console.log('✅ Profile seeded');
 

@@ -138,11 +138,30 @@ export default function About() {
     { label: 'Certifications',  value: '10',   suffix: '+' },
   ];
 
+  const defaultSkills = {
+    languages:  [{ name: 'C', level: 88 }, { name: 'C++', level: 95 }, { name: 'Python', level: 85 }, { name: 'JavaScript', level: 90 }],
+    frameworks: [{ name: 'ReactJS', level: 90 }, { name: 'NodeJS', level: 88 }, { name: 'ExpressJS', level: 85 }, { name: 'Tailwind CSS', level: 88 }],
+    databases:  [{ name: 'MongoDB', level: 88 }, { name: 'MySQL', level: 85 }, { name: 'Optimized SQL Queries', level: 85 }],
+    tools:      [{ name: 'VSCode', level: 92 }, { name: 'Git and GitHub', level: 90 }, { name: 'Jupyter Notebooks', level: 82 }, { name: 'MySQL Workbench', level: 84 }],
+    coursework: [{ name: 'DSA', level: 95 }, { name: 'Object Oriented Programming', level: 90 }, { name: 'Operating Systems', level: 88 }, { name: 'DBMS', level: 88 }],
+  };
+
+  const activeSkills = {
+    languages:  skills.languages?.length  ? skills.languages  : defaultSkills.languages,
+    frameworks: skills.frameworks?.length ? skills.frameworks : defaultSkills.frameworks,
+    databases:  skills.databases?.length  ? skills.databases  : defaultSkills.databases,
+    tools:      skills.tools?.length      ? skills.tools      : defaultSkills.tools,
+    coursework: skills.coursework?.length ? skills.coursework : defaultSkills.coursework,
+  };
+
   const skillCategories = [
-    { title: 'Languages',   icon: '💻', items: skills.languages   || [] },
-    { title: 'Frameworks',  icon: '🧩', items: skills.frameworks  || [] },
-    { title: 'Tools',       icon: '🔧', items: skills.tools       || [] },
+    { title: 'Languages',                icon: '💻', items: activeSkills.languages },
+    { title: 'Frameworks & Libraries',   icon: '🧩', items: activeSkills.frameworks },
+    { title: 'Databases & Cloud',        icon: '🗄️', items: activeSkills.databases },
+    { title: 'Tools & Version Control',  icon: '🔧', items: activeSkills.tools },
+    { title: 'Core Coursework',          icon: '📚', items: activeSkills.coursework },
   ];
+
 
   if (loading) return (
     <div className="page loading-container">
