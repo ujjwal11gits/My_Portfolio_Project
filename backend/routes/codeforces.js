@@ -1,0 +1,61 @@
+import express from 'express';
+import axios from 'axios';
+import NodeCache from 'node-cache';
+
+const router = express.Router();
+const cache = new NodeCache({ stdTTL: 3600 });
+const CF = 'https://codeforces.com/api';
+
+router.get('/stats/:handle', async (req, res) => {
+  const { handle } = req.params;
+  const cacheKey = `cf_${handle}`;
+  if (cache.has(cacheKey)) return res.json({ success: true, data: cache.get(cacheKey), cached: true });
+
+  try {
+    const [userRes, ratingRes, submissionsRes] = await Promise.all([
+      axios.get(`${CF}/user.info?handles=${handle}`),
+      axios.get(`${CF}/user.rating?handle=${handle}`),
+      axios.get(`${CF}/user.status?handle=${handle}&from=1&count=200`),
+    ]);
+
+    const user    = userRes.data.result[0];
+    const history = ratingRes.data.result;
+    const subs    = submissionsRes.data.result;
+
+    const solved = new Set();
+    subs.filter(s => s.verdict === 'OK').forEach(s => solved.add(`${s.problem.contestId}-${s.problem.index}`));
+
+    const ratingHistory = history.slice(-20).map(h => ({
+      rating:      h.newRating,
+      contestName: h.contestName,
+      date:        h.ratingUpdateTimeSeconds * 1000,
+      rank:        h.rank,
+    }));
+
+    const data = {
+      handle:      user.handle,
+      rating:      user.rating      || 0,
+      maxRating:   user.maxRating   || 0,
+      rank:        user.rank        || 'unrated',
+      maxRank:     user.maxRank     || 'unrated',
+      contribution: user.contribution,
+      problemsSolved: solved.size,
+      contestsCount:  history.length,
+      ratingHistory,
+      avatar:      user.avatar,
+      country:     user.country,
+    };
+
+    cache.set(cacheKey, data);
+    res.json({ success: true, data });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+router.delete('/cache/:handle', (req, res) => {
+  cache.del(`cf_${req.params.handle}`);
+  res.json({ success: true, message: 'Codeforces cache cleared' });
+});
+
+export default router;
