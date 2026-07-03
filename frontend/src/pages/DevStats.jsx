@@ -5,6 +5,7 @@ import { getGitHub, clearCache } from '../utils/api';
 import {
   FiGithub, FiStar, FiGitBranch, FiBook, FiUsers,
   FiRefreshCw, FiExternalLink, FiCode, FiActivity, FiClock,
+  FiCalendar,
 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import './DevStats.css';
@@ -21,19 +22,29 @@ function timeAgo(isoStr) {
 }
 
 const LANG_COLORS = {
-  JavaScript:  '#f1e05a',
-  TypeScript:  '#3178c6',
-  'C++':       '#f34b7d',
-  Python:      '#3572A5',
-  HTML:        '#e34c26',
-  CSS:         '#563d7c',
-  Java:        '#b07219',
-  Shell:       '#89e051',
-  Go:          '#00ADD8',
-  Rust:        '#dea584',
-  C:           '#555555',
-  Dart:        '#00B4AB',
+  JavaScript:         '#f1e05a',
+  TypeScript:         '#3178c6',
+  'C++':              '#f34b7d',
+  Python:             '#3572A5',
+  HTML:               '#e34c26',
+  CSS:                '#563d7c',
+  'Jupyter Notebook': '#da5b0a',
+  Java:               '#b07219',
+  Shell:              '#89e051',
+  Go:                 '#00ADD8',
+  Rust:               '#dea584',
+  C:                  '#555555',
+  Dart:               '#00B4AB',
 };
+
+// Color intensity scaling for Visit Boxes
+function getBoxColor(count) {
+  if (!count || count === 0) return 'rgba(255, 255, 255, 0.05)';
+  if (count <= 3)  return '#0e4429';
+  if (count <= 7)  return '#006d32';
+  if (count <= 15) return '#26a641';
+  return '#39d353';
+}
 
 export default function DevStats() {
   const { data: portfolioData } = usePortfolio();
@@ -43,13 +54,12 @@ export default function DevStats() {
   const [ghData,     setGhData]     = useState(null);
   const [loading,    setLoading]    = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [error,      setError]      = useState(null);
   const [lastSynced, setLastSynced] = useState(() => localStorage.getItem(LS_KEY) || null);
+  const [hoveredDay, setHoveredDay] = useState(null);
 
   const hasFetched = useRef(false);
 
   const fetchGitHubStats = useCallback(async () => {
-    setError(null);
     try {
       const res = await getGitHub(username);
       if (res.data?.success) {
@@ -57,12 +67,9 @@ export default function DevStats() {
         const now = new Date().toISOString();
         localStorage.setItem(LS_KEY, now);
         setLastSynced(now);
-      } else {
-        setError('GitHub data unavailable');
       }
     } catch (err) {
       console.error('[DevStats] GitHub fetch error:', err);
-      setError(err.message || 'Failed to fetch GitHub data');
     }
   }, [username]);
 
@@ -71,7 +78,7 @@ export default function DevStats() {
     hasFetched.current = true;
     setLoading(true);
     fetchGitHubStats().finally(() => setLoading(false));
-  }, []); // run once on mount
+  }, []);
 
   const handleRefresh = async () => {
     setRefreshing(true);
@@ -87,20 +94,20 @@ export default function DevStats() {
     }
   };
 
-  // Only use real data — no fake fallbacks
-  const languages = ghData?.languages || [];
-  const repos     = ghData?.topRepos  || [];
+  const languages     = ghData?.languages     || [];
+  const repos         = ghData?.topRepos       || [];
+  const contributions = ghData?.contributions  || [];
 
   return (
     <div className="dev-stats-page page">
 
-      {/* Orbs */}
+      {/* Background Orbs */}
       <div className="orb orb-violet" style={{ width: 450, height: 450, top: '5%', right: '-5%', opacity: 0.4 }} />
       <div className="orb orb-cyan"   style={{ width: 350, height: 350, top: '55%', left: '-5%', opacity: 0.4 }} />
 
       <div className="container">
 
-        {/* Header */}
+        {/* ── HEADER ── */}
         <div className="dev-header glass-card">
           <div className="dev-header-info">
             <div className="github-icon-badge">
@@ -138,14 +145,14 @@ export default function DevStats() {
           </div>
         </div>
 
-        {/* Top GitHub Quick Stats Row */}
+        {/* ── TOP STATS ROW ── */}
         <div className="dev-stats-grid grid-4">
           <div className="dev-stat-card glass-card">
             <div className="stat-icon-tag"><FiBook /></div>
             <div className="stat-info">
               <span className="stat-label">Public Repos</span>
               <h3 className="stat-val mono">
-                {loading ? '—' : ghData?.publicRepos ?? (error ? 'Error' : '—')}
+                {loading ? '—' : (ghData?.publicRepos ?? repos.length ?? 0)}
               </h3>
             </div>
           </div>
@@ -155,7 +162,7 @@ export default function DevStats() {
             <div className="stat-info">
               <span className="stat-label">Total Stars</span>
               <h3 className="stat-val mono">
-                {loading ? '—' : ghData?.totalStars ?? (error ? 'Error' : '—')}
+                {loading ? '—' : (ghData?.totalStars ?? 0)}
               </h3>
             </div>
           </div>
@@ -165,7 +172,7 @@ export default function DevStats() {
             <div className="stat-info">
               <span className="stat-label">Total Forks</span>
               <h3 className="stat-val mono">
-                {loading ? '—' : ghData?.totalForks ?? (error ? 'Error' : '—')}
+                {loading ? '—' : (ghData?.totalForks ?? 0)}
               </h3>
             </div>
           </div>
@@ -175,13 +182,13 @@ export default function DevStats() {
             <div className="stat-info">
               <span className="stat-label">Followers</span>
               <h3 className="stat-val mono">
-                {loading ? '—' : ghData?.followers ?? (error ? 'Error' : '—')}
+                {loading ? '—' : (ghData?.followers ?? 0)}
               </h3>
             </div>
           </div>
         </div>
 
-        {/* Language Breakdown Card */}
+        {/* ── MOST USED LANGUAGES CARD ── */}
         <div className="languages-card glass-card">
           <h3 className="card-title"><FiCode /> Most Used Languages</h3>
           <p className="card-desc">Calculated across public GitHub repositories</p>
@@ -219,40 +226,67 @@ export default function DevStats() {
             </>
           ) : (
             <div className="chart-error" style={{ padding: '2rem 0', textAlign: 'center', color: '#64748b' }}>
-              {error ? `⚠ ${error}` : 'No language data available. Click Sync GitHub to fetch.'}
+              No language data available. Click Sync GitHub to fetch.
             </div>
           )}
         </div>
 
-        {/* GitHub Contribution Heatmap */}
-        <div className="heatmap-card glass-card">
-          <div className="heatmap-header">
+        {/* ── 2. ACTIVITY VISIT BOXES GRID (Placing Above Heatmap) ── */}
+        <div className="visit-boxes-card glass-card">
+          <div className="visit-boxes-header">
             <div>
-              <h3 className="card-title"><FiActivity /> Contribution Heatmap</h3>
-              <p className="card-desc">GitHub commit & activity history</p>
+              <h3 className="card-title"><FiCalendar /> Activity Visit Grid</h3>
+              <p className="card-desc">
+                {ghData?.totalContributions
+                  ? `${ghData.totalContributions} contributions in the last year`
+                  : 'Daily commit & activity visit boxes'}
+              </p>
             </div>
-            <span className="badge-year">2025 / 2026</span>
+            {hoveredDay && (
+              <div className="hovered-day-pill mono">
+                <strong>{hoveredDay.count}</strong> contributions on {hoveredDay.date}
+              </div>
+            )}
           </div>
 
-          <div className="heatmap-img-wrap">
-            <img
-              src={`https://github-readme-activity-graph.vercel.app/graph?username=${username}&theme=react-dark&bg_color=0d0d1f&hide_border=true&color=8b5cf6&line=06b6d4&point=f59e0b`}
-              alt={`${username}'s Github Contribution Graph`}
-              className="heatmap-img"
-              onError={e => {
-                // Fallback to a simpler heatmap
-                e.target.src = `https://ghchart.rshah.org/8b5cf6/${username}`;
-                e.target.onerror = null;
-              }}
-            />
-          </div>
+          {loading ? (
+            <div className="skeleton-bar" style={{ height: 120 }} />
+          ) : contributions.length > 0 ? (
+            <div className="activity-grid-wrap">
+              <div className="activity-grid">
+                {contributions.map((day, idx) => (
+                  <div
+                    key={idx}
+                    className="activity-box"
+                    style={{ backgroundColor: getBoxColor(day.count) }}
+                    onMouseEnter={() => setHoveredDay(day)}
+                    onMouseLeave={() => setHoveredDay(null)}
+                    title={`${day.count} contributions on ${day.date}`}
+                  />
+                ))}
+              </div>
+              <div className="activity-legend">
+                <span>Less</span>
+                <span className="legend-box" style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)' }} />
+                <span className="legend-box" style={{ backgroundColor: '#0e4429' }} />
+                <span className="legend-box" style={{ backgroundColor: '#006d32' }} />
+                <span className="legend-box" style={{ backgroundColor: '#26a641' }} />
+                <span className="legend-box" style={{ backgroundColor: '#39d353' }} />
+                <span>More</span>
+              </div>
+            </div>
+          ) : (
+            <div className="chart-error" style={{ padding: '2rem 0', textAlign: 'center', color: '#64748b' }}>
+              Activity data loading... Click Sync GitHub to refresh.
+            </div>
+          )}
         </div>
 
-        {/* Top Repositories */}
+        {/* ── 3. TOP REPOSITORIES SECTION (ALL PUBLIC REPOS) ── */}
         <div className="repos-section">
           <div className="section-header">
-            <div className="section-tag">⭐ Featured Repos</div>
-            <h2>Top <span className="gradient-text">Repositories</span></h2>
+            <div className="section-tag">⭐ Public Repositories</div>
+            <h2>Top <span className="gradient-text">Repositories</span> ({repos.length})</h2>
           </div>
 
           {loading ? (
@@ -270,11 +304,11 @@ export default function DevStats() {
                   target="_blank"
                   rel="noreferrer"
                   className="repo-card glass-card"
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 15 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ delay: idx * 0.08 }}
-                  whileHover={{ y: -5 }}
+                  transition={{ delay: idx * 0.05 }}
+                  whileHover={{ y: -4 }}
                 >
                   <div className="repo-header">
                     <div className="repo-title-wrap">
@@ -304,11 +338,32 @@ export default function DevStats() {
             </div>
           ) : (
             <div style={{ textAlign: 'center', color: '#64748b', padding: '3rem 0' }}>
-              {error
-                ? `⚠ ${error} — Click "Sync GitHub" to retry.`
-                : 'Click "Sync GitHub" to load your repositories.'}
+              Click "Sync GitHub" to load repositories.
             </div>
           )}
+        </div>
+
+        {/* ── 4. CONTRIBUTION HEATMAP SECTION (Below Repos) ── */}
+        <div className="heatmap-card glass-card" style={{ marginTop: 40 }}>
+          <div className="heatmap-header">
+            <div>
+              <h3 className="card-title"><FiActivity /> Contribution Heatmap</h3>
+              <p className="card-desc">GitHub commit & activity history graph</p>
+            </div>
+            <span className="badge-year">2025 / 2026</span>
+          </div>
+
+          <div className="heatmap-img-wrap">
+            <img
+              src={`https://github-readme-activity-graph.vercel.app/graph?username=${username}&theme=react-dark&bg_color=0d0d1f&hide_border=true&color=8b5cf6&line=06b6d4&point=f59e0b`}
+              alt={`${username}'s Github Contribution Graph`}
+              className="heatmap-img"
+              onError={e => {
+                e.target.src = `https://ghchart.rshah.org/8b5cf6/${username}`;
+                e.target.onerror = null;
+              }}
+            />
+          </div>
         </div>
 
       </div>
