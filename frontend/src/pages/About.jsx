@@ -254,7 +254,40 @@ export default function About() {
       <div className="glow-divider" />
 
       {/* ══════════════════════════════════════════
-          SECTION 2 — SKILLS & TECHNOLOGIES
+          SECTION 2 — INTERESTS & PASSIONS
+      ══════════════════════════════════════════ */}
+      <section className="section interests-section">
+        <div className="container">
+          <div className="section-header reveal visible">
+            <div className="section-tag">✨ What I Love</div>
+            <h2>Interests & <span className="gradient-text">Passions</span></h2>
+            <p>Core areas of interest, domain specializations, and creative pursuits</p>
+          </div>
+          <div className="interests-cloud reveal visible">
+            {(profile.interests?.length > 0 ? profile.interests : [
+              'Competitive Programming 🧠', 'Web Development 🕸️', 'Machine Learning 🤖',
+              'Data Structures & Algorithms 💻', 'Open Source 🌐', 'Problem Solving 🔍', 'System Design 🏗️'
+            ]).map((interest, i) => (
+              <motion.span
+                key={i}
+                className="interest-pill"
+                initial={{ opacity: 0, scale: 0.85 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.05, duration: 0.3 }}
+                whileHover={{ scale: 1.06, y: -2 }}
+              >
+                {interest}
+              </motion.span>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <div className="glow-divider" />
+
+      {/* ══════════════════════════════════════════
+          SECTION 3 — SKILLS & TECHNOLOGIES
       ══════════════════════════════════════════ */}
       <section className="section skills-section">
         <div className="container">
