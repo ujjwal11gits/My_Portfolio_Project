@@ -158,7 +158,8 @@
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 20px;
-  margin-top: 80px;
+  margin-top: 48px;
+  padding-bottom: 0;
 }
 .hero-stat-card {
   padding: 24px 20px;
@@ -179,8 +180,9 @@
 .home-cta-section {
   position: relative;
   z-index: 2;
-  margin-top: 64px;
-  margin-bottom: 64px;
+  margin-top: 56px;
+  margin-bottom: 80px;
+  padding-bottom: 0;
 }
 
 .home-cta-card {
@@ -212,13 +214,8 @@
   line-height: 1.7;
 }
 
-.cta-buttons {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  margin-top: 12px;
-  flex-wrap: wrap;
+.cta-btn-single {
+  margin-top: 8px;
 }
 
 .scroll-indicator {

@@ -289,16 +289,10 @@ export default function Home() {
               Have an exciting project, full-time engineering role, or freelance collaboration in mind?
               Let's connect and turn high-impact ideas into reality.
             </p>
-            <div className="cta-buttons">
+            <div className="cta-btn-single">
               <Link to="/contact" className="btn btn-primary">
                 Get In Touch <FiArrowRight />
               </Link>
-              <button
-                onClick={e => handleOpenResume(e, profile?.resumeUrl)}
-                className="btn btn-outline"
-              >
-                <FiDownload /> Download Resume
-              </button>
             </div>
           </div>
         </div>

@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { usePortfolio } from '../context/PortfolioContext';
 import {
   FiMapPin, FiBook, FiCalendar, FiAward, FiCode,
-  FiGithub, FiLinkedin, FiTwitter, FiMail,
+  FiGithub, FiLinkedin, FiInstagram, FiMail,
 } from 'react-icons/fi';
 import './About.css';
 
@@ -210,12 +210,31 @@ export default function About() {
                 <div className="about-photo-glow" />
               </div>
 
-              {/* Social links under photo */}
+              {/* Social links under photo — always visible with fallbacks */}
               <div className="about-socials">
-                {social.github    && <a href={social.github}   target="_blank" rel="noreferrer" className="about-social-link"><FiGithub /></a>}
-                {social.linkedin  && <a href={social.linkedin} target="_blank" rel="noreferrer" className="about-social-link"><FiLinkedin /></a>}
-                {social.twitter   && <a href={social.twitter}  target="_blank" rel="noreferrer" className="about-social-link"><FiTwitter /></a>}
-                {profile.email    && <a href={`mailto:${profile.email}`} className="about-social-link"><FiMail /></a>}
+                <a
+                  href={social.github || 'https://github.com/ujjwal11gits'}
+                  target="_blank" rel="noreferrer" className="about-social-link" title="GitHub"
+                >
+                  <FiGithub />
+                </a>
+                <a
+                  href={social.linkedin || 'https://www.linkedin.com/in/ujjwalkumarchoubey'}
+                  target="_blank" rel="noreferrer" className="about-social-link" title="LinkedIn"
+                >
+                  <FiLinkedin />
+                </a>
+                {social.instagram && (
+                  <a href={social.instagram} target="_blank" rel="noreferrer" className="about-social-link" title="Instagram">
+                    <FiInstagram />
+                  </a>
+                )}
+                <a
+                  href={`mailto:${profile.email || 'ujjwal11.work@gmail.com'}`}
+                  className="about-social-link" title="Email"
+                >
+                  <FiMail />
+                </a>
               </div>
             </motion.div>
 
