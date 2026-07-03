@@ -18,6 +18,7 @@ export const getGitHub        = (u)        => api.get(`/github/user/${u}`);
 export const getLeetCode      = (u)        => api.get(`/leetcode/stats/${u}`);
 export const getCodeforces    = (u)        => api.get(`/codeforces/stats/${u}`);
 export const getCodeChef      = (u)        => api.get(`/codechef/stats/${u}`);
+export const getGFG           = (u)        => api.get(`/gfg/stats/${u}`);
 
 export const clearCache       = (platform, u) => api.delete(`/${platform}/cache/${u}`);
 export const sendContact      = (data)     => api.post('/contact/send', data);

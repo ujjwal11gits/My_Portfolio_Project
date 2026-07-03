@@ -14,6 +14,7 @@ import githubRoutes     from './routes/github.js';
 import leetcodeRoutes   from './routes/leetcode.js';
 import codeforcesRoutes from './routes/codeforces.js';
 import codechefRoutes   from './routes/codechef.js';
+import gfgRoutes        from './routes/gfg.js';
 import contactRoutes    from './routes/contact.js';
 
 dotenv.config();
@@ -40,6 +41,7 @@ app.use('/api/github',      githubRoutes);
 app.use('/api/leetcode',    leetcodeRoutes);
 app.use('/api/codeforces',  codeforcesRoutes);
 app.use('/api/codechef',    codechefRoutes);
+app.use('/api/gfg',         gfgRoutes);
 app.use('/api/contact',     contactRoutes);
 
 // ── Health & Root Check ──────────────────────────────────────
