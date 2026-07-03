@@ -778,3 +778,65 @@
   .codolio-modal-grid { grid-template-columns: 1fr; }
   .modal-col-right { display: none; }
 }
+
+/* ── Mobile Responsive Overrides ── */
+@media (max-width: 768px) {
+  .featured-spotlight {
+    grid-template-columns: 1fr !important;
+    gap: 20px;
+    padding: 20px;
+    margin-bottom: 32px;
+  }
+  .spotlight-title {
+    font-size: 1.5rem;
+  }
+  .spotlight-preview {
+    height: 220px;
+    grid-row: 1; /* Puts image preview on top of description in mobile */
+  }
+  .category-filter-wrap {
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+  .category-tabs {
+    padding: 4px;
+    border-radius: var(--radius-sm);
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+  }
+  .category-tab {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+    border-radius: var(--radius-sm);
+  }
+  .codolio-project-card {
+    max-width: 100%;
+  }
+  .codolio-img-wrap {
+    height: 180px;
+  }
+  
+  /* Modal responsive overrides */
+  .codolio-modal-card {
+    padding: 20px 16px 16px;
+    border-radius: 16px;
+    margin: 20px auto;
+    max-height: 95vh;
+    overflow-y: auto;
+  }
+  .modal-close-btn {
+    top: 10px;
+    right: 10px;
+    font-size: 1.2rem;
+  }
+  .modal-main-title {
+    font-size: 1.4rem;
+    padding-right: 24px;
+  }
+  .modal-col-left {
+    padding-right: 0;
+    margin-top: 12px;
+  }
+}
