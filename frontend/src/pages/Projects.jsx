@@ -4,33 +4,41 @@ import { usePortfolio } from '../context/PortfolioContext';
 import { upvoteProject } from '../utils/api';
 import {
   FiGithub, FiExternalLink, FiFolder, FiStar, FiFilter,
-  FiThumbsUp, FiShare2, FiCheckCircle, FiCode, FiX
+  FiThumbsUp, FiShare2, FiCheckCircle, FiCode, FiX,
+  FiLayers, FiCpu, FiZap, FiShield,
 } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import './Projects.css';
 
 const CATEGORIES = ['All', 'Web Dev', 'ML/AI', 'DSA', 'App', 'CLI'];
 
-// Preset technology dot colors (Codolio style)
+// Technology brand colors & dots (Codolio / GitHub style)
 const TECH_COLORS = {
-  JavaScript: '#f1e05a',
-  ReactJS: '#61dafb',
-  React: '#61dafb',
-  'Node.js': '#68a063',
-  ExpressJS: '#828282',
-  MongoDB: '#47a248',
-  'C++': '#f34b7d',
-  Python: '#3572A5',
-  HTML: '#e34c26',
-  CSS: '#563d7c',
-  TailwindCSS: '#38bdf8',
+  JavaScript:         '#f1e05a',
+  ReactJS:            '#61dafb',
+  React:              '#61dafb',
+  'Node.js':          '#68a063',
+  ExpressJS:          '#828282',
+  MongoDB:            '#47a248',
+  'C++':              '#f34b7d',
+  Python:             '#3572A5',
+  HTML:               '#e34c26',
+  CSS:                '#563d7c',
+  TailwindCSS:        '#38bdf8',
+  TypeScript:         '#3178c6',
+  'Jupyter Notebook': '#da5b0a',
 };
+
+// Feature Badge Icon Selector
+function getFeatureIcon(index) {
+  const icons = [<FiCheckCircle />, <FiZap />, <FiLayers />, <FiCpu />, <FiShield />];
+  return icons[index % icons.length];
+}
 
 export default function Projects() {
   const { data: portfolioData, loading } = usePortfolio();
   const projects = portfolioData?.projects || [];
   const profile  = portfolioData?.profile || {};
-  const githubUser = profile.codingProfiles?.github || 'bytewiz_ujjwal';
 
   const [activeCategory, setActiveCategory] = useState('All');
   const [selectedProject, setSelectedProject] = useState(null);
@@ -122,6 +130,7 @@ export default function Projects() {
               <h3 className="spotlight-title">{featuredProject.title}</h3>
               <p className="spotlight-desc">{featuredProject.tagline || featuredProject.description}</p>
 
+              {/* Tech Stack Chips */}
               <div className="spotlight-tech-stack">
                 {featuredProject.tech?.map((t, i) => (
                   <span key={i} className="tech-badge">
@@ -130,6 +139,18 @@ export default function Projects() {
                   </span>
                 ))}
               </div>
+
+              {/* Key Features Bullet Badges Highlights */}
+              {featuredProject.features?.length > 0 && (
+                <div className="spotlight-features-wrap">
+                  {featuredProject.features.slice(0, 3).map((feat, i) => (
+                    <span key={i} className="feature-bullet-badge">
+                      <span className="feature-icon">{getFeatureIcon(i)}</span>
+                      {feat}
+                    </span>
+                  ))}
+                </div>
+              )}
 
               <div className="spotlight-actions">
                 <button
@@ -215,10 +236,9 @@ export default function Projects() {
                     <h3 className="codolio-title">{project.title}</h3>
                   </div>
 
-                  {/* Description / Tagline */}
                   <p className="codolio-desc">{project.tagline || project.description}</p>
 
-                  {/* Language Colored Dots (Codolio Style) */}
+                  {/* Tech Stack Colored Brand Dots */}
                   <div className="codolio-lang-dots">
                     {project.tech?.slice(0, 4).map((t, i) => (
                       <span key={i} className="codolio-lang-item">
@@ -228,7 +248,19 @@ export default function Projects() {
                     ))}
                   </div>
 
-                  {/* Card Bottom Action Bar (Visit App + GitHub Repo) */}
+                  {/* Key Feature Badges Preview */}
+                  {project.features?.length > 0 && (
+                    <div className="card-feature-badges">
+                      {project.features.slice(0, 2).map((feat, i) => (
+                        <span key={i} className="feature-bullet-badge mini">
+                          <span className="feature-icon">{getFeatureIcon(i)}</span>
+                          {feat}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Action Bar */}
                   <div className="card-action-bar">
                     <button
                       className={`live-demo-btn btn-sm ${(!project.live || project.live === '#') ? 'not-live' : ''}`}
@@ -264,7 +296,7 @@ export default function Projects() {
       </div>
 
       {/* ═════════════════════════════════════════════════════════
-          CODOLIO-STYLE PROJECT DETAIL MODAL (Image 2 Inspired)
+          CODOLIO-STYLE PROJECT DETAIL MODAL WITH BULLET BADGES
       ═════════════════════════════════════════════════════════ */}
       <AnimatePresence>
         {selectedProject && (
@@ -343,7 +375,7 @@ export default function Projects() {
 
                   {/* Tech Stack Languages Row */}
                   <div className="modal-languages-section">
-                    <span className="lang-label"><FiCode size={14} /> Languages & Tech:</span>
+                    <span className="lang-label"><FiCode size={14} /> Languages & Tech Stack:</span>
                     <div className="modal-lang-list">
                       {selectedProject.tech?.map((t, i) => (
                         <span key={i} className="modal-lang-chip">
@@ -354,20 +386,27 @@ export default function Projects() {
                     </div>
                   </div>
 
-                  {/* Full Description & Features List */}
+                  {/* KEY FEATURES BULLET BADGES (System Architecture & Highlights) */}
+                  {selectedProject.features?.length > 0 && (
+                    <div className="modal-features-section">
+                      <h4 className="features-section-title">
+                        <FiLayers style={{ verticalAlign: 'middle', marginRight: 6 }} />
+                        Key Features & System Architecture Highlights:
+                      </h4>
+                      <div className="modal-features-badges-grid">
+                        {selectedProject.features.map((feat, i) => (
+                          <div key={i} className="feature-bullet-badge modal-badge">
+                            <span className="feature-icon">{getFeatureIcon(i)}</span>
+                            <span className="feature-text">{feat}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Full Description Text */}
                   <div className="modal-description-section">
                     <p className="full-desc-text">{selectedProject.description}</p>
-
-                    {selectedProject.features?.length > 0 && (
-                      <div className="modal-features-list">
-                        <h4>Key Features & Technical Highlights:</h4>
-                        <ul>
-                          {selectedProject.features.map((feat, i) => (
-                            <li key={i}>{feat}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
                   </div>
 
                 </div>
@@ -398,13 +437,13 @@ export default function Projects() {
                     {/* Checklist */}
                     <ul className="completeness-checklist">
                       <li><FiCheckCircle className="check-icon" /> Project name</li>
-                      <li><FiCheckCircle className="check-icon" /> Project URL</li>
+                      <li><FiCheckCircle className="check-icon" /> Live App URL</li>
                       <li><FiCheckCircle className="check-icon" /> Tagline</li>
                       <li><FiCheckCircle className="check-icon" /> Category</li>
-                      <li><FiCheckCircle className="check-icon" /> Built with</li>
-                      <li><FiCheckCircle className="check-icon" /> Description</li>
+                      <li><FiCheckCircle className="check-icon" /> Tech Stack</li>
+                      <li><FiCheckCircle className="check-icon" /> Architecture Highlights</li>
                       <li><FiCheckCircle className="check-icon" /> Logo</li>
-                      <li><FiCheckCircle className="check-icon" /> Cover image(s)</li>
+                      <li><FiCheckCircle className="check-icon" /> Banner preview</li>
                     </ul>
                   </div>
                 </div>
